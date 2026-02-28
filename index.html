@@ -1,0 +1,1264 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta name="x-poe-datastore-behavior" content="local_only">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f2557">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="وكيل المدرسة">
+<title>نظام إدارة وكيل المدرسة المطور</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--primary:#0f2557;--primary-light:#1e3a6e;--primary-dark:#091738;--accent:#c9a227;--accent-light:#e0bd4e;--surface:#ffffff;--surface2:#f4f6f9;--surface3:#e8ecf1;--bg:#eef1f6;--text:#1a1d2e;--text2:#4a5068;--text3:#7a8098;--border:#d0d5e0;--success:#1a7f37;--warning:#d4a017;--danger:#c41e3a;--danger-light:#fce8ec;--radius:10px;--shadow:0 2px 12px rgba(15,37,87,.08);--shadow-lg:0 8px 32px rgba(15,37,87,.12);--font:'Cairo',Tahoma,sans-serif;--sidebar-w:260px;--header-h:60px}
+.dark{--primary:#1e3a6e;--primary-light:#2a4f8a;--primary-dark:#0f2557;--accent:#e0bd4e;--accent-light:#f0d56e;--surface:#161b22;--surface2:#1c2333;--surface3:#242d3d;--bg:#0d1117;--text:#c9d1d9;--text2:#8b949e;--text3:#6e7681;--border:#30363d;--danger-light:#3d1f28;--shadow:0 2px 12px rgba(0,0,0,.3);--shadow-lg:0 8px 32px rgba(0,0,0,.4)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;font-size:14px;line-height:1.6}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--surface2)}
+::-webkit-scrollbar-thumb{background:var(--text3);border-radius:3px}
+a{color:var(--accent);text-decoration:none}
+input,select,textarea,button{font-family:var(--font);font-size:14px}
+button{cursor:pointer;border:none;outline:none}
+input,select,textarea{background:var(--surface);color:var(--text);border:1.5px solid var(--border);border-radius:var(--radius);padding:10px 14px;width:100%;transition:.2s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(201,162,39,.15)}
+textarea{resize:vertical;min-height:80px}
+/* LOGIN */
+#loginScreen{position:fixed;inset:0;background:linear-gradient(135deg,var(--primary-dark) 0%,var(--primary) 50%,var(--primary-light) 100%);display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-box{background:var(--surface);border-radius:16px;padding:40px 36px;width:90%;max-width:400px;box-shadow:var(--shadow-lg);text-align:center;animation:fadeUp .5s ease}
+.login-box .logo-icon{width:80px;height:80px;margin:0 auto 16px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center}
+.login-box .logo-icon svg{width:44px;height:44px;fill:var(--accent)}
+.login-box h1{font-size:22px;font-weight:700;color:var(--primary);margin-bottom:6px}
+.login-box p{color:var(--text2);font-size:13px;margin-bottom:24px}
+.login-box .field{margin-bottom:16px;text-align:right}
+.login-box label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--text2)}
+.login-box .btn-login{width:100%;padding:12px;background:var(--primary);color:#fff;border-radius:var(--radius);font-size:16px;font-weight:600;transition:.2s}
+.login-box .btn-login:hover{background:var(--primary-light)}
+.login-box .err{color:var(--danger);font-size:12px;margin-top:8px;display:none}
+/* LAYOUT */
+#app{display:none}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100}
+.sidebar{position:fixed;top:0;right:0;width:var(--sidebar-w);height:100vh;background:var(--primary-dark);color:#fff;z-index:101;display:flex;flex-direction:column;transition:transform .3s ease;overflow-y:auto}
+.sidebar .brand{padding:20px;text-align:center;border-bottom:1px solid rgba(255,255,255,.1)}
+.sidebar .brand-logo{width:56px;height:56px;margin:0 auto 8px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--primary-dark)}
+.sidebar .brand h2{font-size:15px;font-weight:600}
+.sidebar .brand small{font-size:11px;opacity:.6}
+.sidebar nav{flex:1;padding:12px 0}
+.sidebar nav .nav-header {padding: 18px 24px 8px; font-size: 11px; color: rgba(255,255,255,0.5); font-weight: 700; letter-spacing: .5px;}
+.sidebar nav a{display:flex;align-items:center;gap:12px;margin:6px 16px;padding:10px 16px;color:rgba(255,255,255,.7);font-size:13px;font-weight:600;border-radius:12px;transition:all .3s ease;border:1px solid transparent;background:transparent}
+.sidebar nav a:hover{background:rgba(255,255,255,.05);color:#fff;border-color:rgba(255,255,255,.1);transform:translateY(-1px)}
+.sidebar nav a.active{background:linear-gradient(90deg,var(--accent) 0%,var(--accent-light) 100%);color:var(--primary-dark);box-shadow:0 4px 15px rgba(201,162,39,.3);border-color:transparent}
+.sidebar nav a svg{width:18px;height:18px;flex-shrink:0;fill:currentColor;transition:.3s}
+.sidebar .sidebar-footer{padding:16px 20px;border-top:1px solid rgba(255,255,255,.1)}
+.sidebar .sidebar-footer button{width:100%;padding:10px;background:rgba(255,255,255,.08);color:#fff;border-radius:var(--radius);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;transition:.2s}
+.sidebar .sidebar-footer button:hover{background:rgba(255,255,255,.15)}
+.main{margin-right:var(--sidebar-w);min-height:100vh;display:flex;flex-direction:column}
+.header{height:var(--header-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:50}
+.header .menu-btn{display:none;background:none;font-size:22px;color:var(--text)}
+.header .header-title{font-size:17px;font-weight:600}
+.header .header-date{margin-right:auto;font-size:12px;color:var(--text3)}
+.content{flex:1;padding:24px}
+.section{display:none}
+.section.active{display:block}
+/* CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);position:relative;overflow:hidden;border-top:3px solid var(--primary)}
+.stat-card .sc-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:20px}
+.stat-card .sc-val{font-size:28px;font-weight:700;color:var(--primary)}
+.stat-card .sc-label{font-size:12px;color:var(--text2);margin-top:2px}
+.stat-card:nth-child(1){border-top-color:var(--primary)} .stat-card:nth-child(1) .sc-icon{background:rgba(15,37,87,.1);color:var(--primary)}
+.stat-card:nth-child(2){border-top-color:var(--danger)} .stat-card:nth-child(2) .sc-icon{background:rgba(196,30,58,.1);color:var(--danger)}
+.stat-card:nth-child(3){border-top-color:var(--warning)} .stat-card:nth-child(3) .sc-icon{background:rgba(212,160,23,.1);color:var(--warning)}
+.stat-card:nth-child(4){border-top-color:var(--success)} .stat-card:nth-child(4) .sc-icon{background:rgba(26,127,55,.1);color:var(--success)}
+.stat-card:nth-child(5){border-top-color:#7c3aed} .stat-card:nth-child(5) .sc-icon{background:rgba(124,58,237,.1);color:#7c3aed}
+.chart-area{background:var(--surface);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:24px}
+.chart-area h3{font-size:15px;margin-bottom:16px;font-weight:600}
+.chart-area canvas{width:100%!important;max-height:260px}
+/* TABLE */
+.panel{background:var(--surface);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:24px}
+.panel-header{padding:16px 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.panel-header h3{font-size:15px;font-weight:600;white-space:nowrap}
+.panel-header .spacer{flex:1}
+.search-input{width:220px;padding:8px 12px;font-size:13px}
+.filter-select{width:140px;padding:8px 12px;font-size:13px}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:10px 14px;text-align:right;white-space:nowrap}
+th{background:var(--surface2);font-weight:600;color:var(--text2);font-size:12px;text-transform:uppercase;letter-spacing:.3px}
+tr{border-bottom:1px solid var(--border);transition:.15s}
+tbody tr:hover{background:var(--surface2)}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-danger{background:var(--danger-light);color:var(--danger)}
+.badge-success{background:rgba(26,127,55,.1);color:var(--success)}
+.badge-warning{background:rgba(212,160,23,.1);color:var(--warning)}
+.badge-primary{background:rgba(15,37,87,.1);color:var(--primary)}
+.badge-info{background:rgba(124,58,237,.1);color:#7c3aed}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--radius);font-size:13px;font-weight:600;transition:.2s;white-space:nowrap}
+.btn-primary{background:var(--primary);color:#fff} .btn-primary:hover{background:var(--primary-light)}
+.btn-accent{background:var(--accent);color:var(--primary-dark)} .btn-accent:hover{background:var(--accent-light)}
+.btn-danger{background:var(--danger);color:#fff} .btn-danger:hover{opacity:.85}
+.btn-success{background:var(--success);color:#fff} .btn-success:hover{opacity:.85}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)} .btn-outline:hover{border-color:var(--primary);color:var(--primary)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-icon{width:32px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:8px;background:var(--surface2);color:var(--text2);transition:.2s}
+.btn-icon:hover{background:var(--surface3);color:var(--text)}
+.actions{display:flex;gap:4px}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--surface);border-radius:14px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:fadeUp .25s ease}
+.modal-lg{max-width:800px}
+.modal-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-head h3{font-size:16px;font-weight:600}
+.modal-close{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--surface2);color:var(--text2);font-size:18px;cursor:pointer;transition:.15s}
+.modal-close:hover{background:var(--surface3)}
+.modal-body{padding:22px}
+.modal-foot{padding:14px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-start;gap:10px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:12px;font-weight:600;color:var(--text2)}
+.form-group.full{grid-column:1/-1}
+/* TOAST & CONFIRM */
+.toast-container{position:fixed;top:20px;left:20px;z-index:300;display:flex;flex-direction:column;gap:8px}
+.toast{padding:12px 20px;border-radius:var(--radius);color:#fff;font-size:13px;font-weight:500;animation:slideIn .3s ease;box-shadow:var(--shadow-lg);max-width:320px}
+.toast-success{background:var(--success)} .toast-danger{background:var(--danger)} .toast-warning{background:var(--warning);color:var(--primary-dark)}
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:250;display:none;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay.show{display:flex}
+.confirm-box{background:var(--surface);border-radius:14px;padding:28px;max-width:380px;width:100%;text-align:center;box-shadow:var(--shadow-lg);animation:fadeUp .2s ease}
+.confirm-box p{margin-bottom:20px;font-size:14px;line-height:1.7}
+.confirm-box .btns{display:flex;gap:10px;justify-content:center}
+/* ALERTS & AI INSIGHTS */
+.alert-box{background:var(--danger-light);border-right:4px solid var(--danger);padding:12px 16px;border-radius:var(--radius);margin-bottom:12px;display:flex;align-items:center;gap:12px}
+.alert-box.warn{background:rgba(212,160,23,.1);border-right-color:var(--warning)}
+.alert-box.info{background:rgba(124,58,237,.1);border-right-color:#7c3aed}
+.alert-box p{font-size:13px;color:var(--text);margin:0}
+/* PROFILE */
+.profile-header{display:flex;gap:24px;align-items:flex-start;background:var(--surface);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:24px;flex-wrap:wrap;position:relative}
+.profile-photo{width:100px;height:100px;border-radius:50%;background:var(--surface2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;border:3px solid var(--accent)}
+.profile-photo img{width:100%;height:100%;object-fit:cover}
+.profile-info{flex:1;min-width:200px}
+.profile-info h2{font-size:20px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.profile-info .meta{display:flex;flex-wrap:wrap;gap:16px;margin-top:8px;font-size:12px;color:var(--text2)}
+.profile-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:20px;background:var(--surface);border-radius:var(--radius);padding:6px;box-shadow:var(--shadow)}
+.profile-tabs button{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;background:transparent;color:var(--text2);transition:.2s}
+.profile-tabs button.active{background:var(--primary);color:#fff}
+.profile-tabs button:hover:not(.active){background:var(--surface2)}
+.profile-section{display:none} .profile-section.active{display:block}
+.empty-state{text-align:center;padding:40px;color:var(--text3)}
+.empty-state .em-icon{font-size:48px;margin-bottom:12px}
+/* RESPONSIVE & ANIMATIONS */
+@media(max-width:768px){
+.sidebar{transform:translateX(100%)} .sidebar.open{transform:translateX(0)} .sidebar-overlay.show{display:block}
+.main{margin-right:0} .header .menu-btn{display:flex} .content{padding:16px}
+.stat-grid{grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.form-grid{grid-template-columns:1fr} .panel-header{flex-direction:column;align-items:stretch}
+.search-input,.filter-select{width:100%} .profile-header{flex-direction:column;align-items:center;text-align:center}
+.profile-info .meta{justify-content:center}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.fade-in{animation:fadeIn .4s ease}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+<div class="login-box">
+<div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"></path></svg></div>
+<h1>المساعد لوكيل المدرسة</h1>
+<p>الإصدار الشامل - الإدارة الذكية</p>
+<div class="field"><label>كلمة المرور</label><input type="password" id="loginPass" placeholder="أدخل كلمة المرور"></div>
+<button class="btn-login" onclick="App.login()">تسجيل الدخول</button>
+<div class="err" id="loginErr">كلمة المرور غير صحيحة</div>
+</div>
+</div>
+
+<div id="app">
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="App.toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+<div class="brand">
+<div class="brand-logo" id="sidebarLogo">و</div>
+<h2 id="sidebarSchoolName">مدرستي</h2>
+<small id="sidebarYear">١٤٤٦ - ١٤٤٧ هـ</small>
+</div>
+<nav id="navLinks"></nav>
+<div class="sidebar-footer"><button onclick="App.logout()">تسجيل الخروج</button></div>
+</aside>
+
+<div class="main">
+<header class="header">
+<button class="menu-btn" onclick="App.toggleSidebar()">☰</button>
+<span class="header-title" id="headerTitle">لوحة التحكم</span>
+<span class="header-date" id="headerDate"></span>
+</header>
+<div class="content" id="mainContent"></div>
+</div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<div class="confirm-overlay" id="confirmOverlay"><div class="confirm-box"><p id="confirmMsg"></p><div class="btns"><button class="btn btn-outline" id="confirmNo">إلغاء</button><button class="btn btn-danger" id="confirmYes">تأكيد</button></div></div></div>
+<div class="modal-overlay" id="modalOverlay"><div class="modal" id="modalBox"><div class="modal-head"><h3 id="modalTitle"></h3><div class="modal-close" onclick="UI.closeModal()">×</div></div><div class="modal-body" id="modalBody"></div><div class="modal-foot" id="modalFoot"></div></div></div>
+
+<script>
+/* ============================================================
+   SCHOOL MANAGEMENT SYSTEM - UPGRADED VERSION
+   ============================================================ */
+
+if(window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches)document.documentElement.classList.add('dark');
+window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change',e=>{e.matches?document.documentElement.classList.add('dark'):document.documentElement.classList.remove('dark')});
+
+const DB={
+  set(k,v){ localStorage.setItem('school_db_'+k, JSON.stringify(v)); },
+  get(k,d=null){
+    const val = localStorage.getItem('school_db_'+k);
+    if(val) { try { return JSON.parse(val); } catch(e) { return d; } }
+    return d;
+  },
+  clear(){
+    Object.keys(localStorage).forEach(k=>{
+      if(k.startsWith('school_db_')) localStorage.removeItem(k);
+    });
+  }
+};
+
+const GRADES=['أول ابتدائي','ثاني ابتدائي','ثالث ابتدائي','رابع ابتدائي','خامس ابتدائي','سادس ابتدائي','أول متوسط','ثاني متوسط','ثالث متوسط','أول ثانوي','ثاني ثانوي','ثالث ثانوي'];
+const SECTIONS=['أ','ب','ج','د','هـ','و'];
+const VIOLATION_TYPES=['مخالفة سلوكية عامة','عنف أو إيذاء','تخريب ممتلكات','غش في الاختبارات','تنمر','إحضار ممنوعات','عدم الالتزام بالزي','سوء أدب مع المعلم','الهروب من المدرسة','استخدام الجوال','أخرى'];
+const ACTIONS_LIST=['إنذار شفهي','إنذار كتابي','استدعاء ولي الأمر','حسم درجات السلوك','تعهد خطي','فصل مؤقت'];
+const EXCELLENCE_TYPES=['مشاركة مميزة','تفوق دراسي','سلوك إيجابي','مساعدة الزملاء','أخرى'];
+const COMM_TYPES=['اتصال هاتفي','رسالة نصية','زيارة للمدرسة','اجتماع','استدعاء'];
+
+const NAV_ITEMS=[
+  {type:'link', id:'dashboard',label:'لوحة التحكم',icon:'<path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>'},
+  {type:'header', label:'بيانات الطلاب'},
+  {type:'link', id:'students',label:'إدارة الطلاب',icon:'<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>'},
+  {type:'link', id:'excellence',label:'التميز والمكافآت',icon:'<path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>'},
+  {type:'link', id:'communications',label:'تواصل أولياء الأمور',icon:'<path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>'},
+  {type:'header', label:'السجلات اليومية'},
+  {type:'link', id:'absence',label:'الغياب',icon:'<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/>'},
+  {type:'link', id:'tardiness',label:'التأخر',icon:'<path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>'},
+  {type:'link', id:'permissions',label:'الاستئذان',icon:'<path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm-3 3h2v2h2v2h-2v2H10v-2H8v-2h2v-2z"/>'},
+  {type:'link', id:'violations',label:'المخالفات',icon:'<path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>'},
+  {type:'header', label:'شؤون المعلمين'},
+  {type:'link', id:'substitutes',label:'حصص الانتظار',icon:'<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>'},
+  {type:'link', id:'teacherLeaves',label:'استئذان المعلمين',icon:'<path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>'},
+  {type:'header', label:'العمليات اليومية'},
+  {type:'link', id:'assembly',label:'الطابور الصباحي',icon:'<path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>'},
+  {type:'link', id:'inspections',label:'تفتيش الفصول',icon:'<path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>'},
+  {type:'link', id:'duties',label:'جدول المناوبات',icon:'<path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>'},
+  {type:'link', id:'maintenance',label:'بلاغات الصيانة',icon:'<path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.5 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>'},
+  {type:'link', id:'visitors',label:'سجل الزوار',icon:'<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM12 10c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>'},
+  {type:'link', id:'lostfound',label:'المفقودات',icon:'<path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>'},
+  {type:'header', label:'الأدوات والإعدادات'},
+  {type:'link', id:'calendar',label:'التقويم الأكاديمي',icon:'<path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>'},
+  {type:'link', id:'bulksms',label:'رسائل جماعية',icon:'<path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>'},
+  {type:'link', id:'formsmaker',label:'صانع النماذج',icon:'<path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM8 15h8v2H8v-2zm0-4h8v2H8v-2z"/>'},
+  {type:'link', id:'reports',label:'التقارير الشاملة',icon:'<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>'},
+  {type:'link', id:'settings',label:'الإعدادات',icon:'<path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>'}
+];
+
+const uid=()=>'_'+Math.random().toString(36).slice(2,9)+Date.now().toString(36);
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtDate=d=>{if(!d)return'';const p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0]};
+const escHtml=s=>s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):'';
+
+function getStudents(){return DB.get('students',[])}
+function getRecords(type){return DB.get(type,[])}
+function saveStudents(arr){DB.set('students',arr)}
+function saveRecords(type,arr){DB.set(type,arr)}
+function getSettings(){return DB.get('settings',{schoolName:'مدرستي',schoolLogo:'',academicYear:'١٤٤٦ - ١٤٤٧ هـ',password:'admin',schoolStartTime:'07:00'})}
+function saveSettings(s){DB.set('settings',s)}
+function studentName(id){const s=getStudents().find(x=>x.id===id);return s?s.name:'غير معروف'}
+function findStudent(id){return getStudents().find(x=>x.id===id)}
+
+const UI={
+  toast(msg,type='success'){
+    const c=document.getElementById('toastContainer');
+    const t=document.createElement('div');
+    t.className='toast toast-'+type; t.textContent=msg;
+    c.appendChild(t);
+    setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300)},3000);
+  },
+  confirm(msg,onYes){
+    const ov=document.getElementById('confirmOverlay');
+    document.getElementById('confirmMsg').textContent=msg;
+    ov.classList.add('show');
+    const yBtn=document.getElementById('confirmYes'), nBtn=document.getElementById('confirmNo');
+    const close=()=>{ov.classList.remove('show');yBtn.onclick=null;nBtn.onclick=null};
+    nBtn.onclick=close; yBtn.onclick=()=>{close();onYes()};
+  },
+  openModal(title,bodyHtml,footHtml='',lg=false){
+    document.getElementById('modalTitle').textContent=title;
+    document.getElementById('modalBody').innerHTML=bodyHtml;
+    document.getElementById('modalFoot').innerHTML=footHtml;
+    document.getElementById('modalBox').classList.toggle('modal-lg',lg);
+    document.getElementById('modalOverlay').classList.add('show');
+  },
+  closeModal(){document.getElementById('modalOverlay').classList.remove('show')},
+  gradeOptions(sel=''){return GRADES.map(g=>`<option value="${g}" ${sel===g?'selected':''}>${g}</option>`).join('')},
+  sectionOptions(sel=''){return SECTIONS.map(s=>`<option value="${s}" ${sel===s?'selected':''}>${s}</option>`).join('')},
+  studentSelect(sel=''){return getStudents().map(s=>`<option value="${s.id}" ${sel===s.id?'selected':''}>${escHtml(s.name)} - ${escHtml(s.grade)}/${escHtml(s.section)}</option>`).join('')},
+  fileToBase64(file,cb){const r=new FileReader();r.onload=e=>cb(e.target.result);r.readAsDataURL(file)},
+};
+
+function openPrint(title,body){
+  const s=getSettings();
+  const w=window.open('','_blank');
+  if(!w)return UI.toast('تعذر فتح نافذة الطباعة','danger');
+  w.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>${escHtml(title)}</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Cairo',sans-serif;padding:30px;color:#1a1d2e;font-size:13px;direction:rtl;line-height:1.6}
+.header{text-align:center;margin-bottom:24px;padding-bottom:16px;border-bottom:2px solid #0f2557}
+.header h1{font-size:18px;color:#0f2557} .header p{font-size:12px;color:#666;margin-top:4px}
+h2{font-size:15px;color:#0f2557;margin:16px 0 8px;border-bottom:1px solid #ddd;padding-bottom:4px}
+table{width:100%;border-collapse:collapse;margin:10px 0} th,td{border:1px solid #ccc;padding:6px 10px;text-align:right;font-size:12px}
+th{background:#f0f2f5;font-weight:600} .info-row{display:flex;gap:20px;flex-wrap:wrap;margin:6px 0}
+.info-row span{font-size:13px} .info-row strong{color:#0f2557}
+.stamp{margin-top:40px;display:flex;justify-content:space-around}
+.stamp div{text-align:center;font-size:12px} .stamp div span{display:block;margin-top:40px;border-top:1px solid #333;padding-top:4px;width:150px}
+.form-content{margin:20px 0;font-size:14px;line-height:2}
+.qr-code{text-align:center;margin:20px 0;}
+@media print{body{padding:15px}}</style></head><body>
+<div class="header">${s.schoolLogo?`<img src="${s.schoolLogo}" style="height:60px;margin-bottom:8px">`:''}<h1>${escHtml(s.schoolName)}</h1><p>${escHtml(s.academicYear)} | ${escHtml(title)}</p></div>
+${body}<script>window.onload=function(){setTimeout(()=>{window.print()},500)}<\/script></body></html>`);
+  w.document.close();
+}
+
+function downloadCSV(filename,headers,rows){
+  let csv='\uFEFF'+headers.join(',')+'\n';
+  rows.forEach(r=>{csv+=r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(',')+'\n'});
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;a.click();URL.revokeObjectURL(a.href);
+}
+
+function drawBarChart(canvasId,labels,datasets){
+  const canvas=document.getElementById(canvasId);if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width=canvas.parentElement.clientWidth-40; const H=canvas.height=220;
+  const pad={t:20,r:20,b:40,l:50}; const cw=W-pad.l-pad.r,ch=H-pad.t-pad.b;
+  ctx.clearRect(0,0,W,H);
+  const isDark=document.documentElement.classList.contains('dark');
+  const txtColor=isDark?'#8b949e':'#4a5068', gridColor=isDark?'#30363d':'#e8ecf1';
+  const allVals=datasets.flatMap(d=>d.data); const maxVal=Math.max(...allVals,1);
+  const barGroupW=cw/labels.length; const barW=Math.min(barGroupW*0.6/datasets.length,40);
+  ctx.strokeStyle=gridColor;ctx.lineWidth=.5;ctx.font='11px Cairo';ctx.fillStyle=txtColor;ctx.textAlign='left';
+  for(let i=0;i<=4;i++){
+    const y=pad.t+ch-ch*(i/4);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(W-pad.r,y);ctx.stroke();
+    ctx.fillText(Math.round(maxVal*i/4),4,y+4);
+  }
+  datasets.forEach((ds,di)=>{
+    ctx.fillStyle=ds.color;
+    ds.data.forEach((v,i)=>{
+      const x=pad.l+barGroupW*i+(barGroupW-barW*datasets.length)/2+barW*di;
+      const h=(v/maxVal)*ch; const y=pad.t+ch-h;
+      ctx.beginPath();ctx.roundRect(x,y,barW-2,h,3);ctx.fill();
+    });
+  });
+  ctx.fillStyle=txtColor;ctx.textAlign='center';ctx.font='11px Cairo';
+  labels.forEach((l,i)=>{ctx.fillText(l,pad.l+barGroupW*i+barGroupW/2,H-8)});
+}
+
+/* ---- MODULES HTML ---- */
+function generateAIInsights(){
+  let insights=[];
+  const sts=getStudents(), abs=getRecords('absences'), vio=getRecords('violations');
+  if(!sts.length) return `<p style="color:var(--text3);font-size:13px">لا توجد بيانات كافية للتحليل.</p>`;
+  
+  // 1. Most absent day
+  const daysCount = {};
+  abs.forEach(a => { const d = new Date(a.date).getDay(); daysCount[d] = (daysCount[d]||0) + 1; });
+  let maxDay = -1, maxVal = 0;
+  for(let d in daysCount) { if(daysCount[d] > maxVal) { maxVal=daysCount[d]; maxDay=d; } }
+  const dayNames = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  if(maxVal > 2) insights.push({type:'info', text:`💡 <strong>تحليل الغياب:</strong> يوم ${dayNames[maxDay]} هو الأكثر غياباً بشكل عام (${maxVal} حالة).`});
+
+  // 2. Class with most violations
+  const classVio = {};
+  vio.forEach(v => {
+    const s = sts.find(x => x.id === v.studentId);
+    if(s) { const c = s.grade+'/'+s.section; classVio[c] = (classVio[c]||0) + 1; }
+  });
+  let maxClass = '', maxCVal = 0;
+  for(let c in classVio) { if(classVio[c] > maxCVal) { maxCVal=classVio[c]; maxClass=c; } }
+  if(maxCVal > 2) insights.push({type:'warn', text:`📊 <strong>تحليل السلوك:</strong> الفصل (${maxClass}) يحتاج لتدخل، لديه أعلى معدل مخالفات مسجلة.`});
+
+  // 3. Automatic Alerts
+  sts.forEach(s=>{
+    let sAbs=abs.filter(a=>a.studentId===s.id).length;
+    let sVio=vio.filter(v=>v.studentId===s.id).length;
+    if(sAbs>=5) insights.push({type:'danger', text:`🚨 <strong>إنذار تلقائي:</strong> الطالب ${s.name} تجاوز 5 أيام غياب.`});
+    if(sVio>=3) insights.push({type:'danger', text:`🚨 <strong>إنذار تلقائي:</strong> الطالب ${s.name} تكررت مخالفاته (${sVio} مرات).`});
+  });
+
+  if(!insights.length) return `<p style="color:var(--text3);font-size:13px">الأمور مستقرة، لا توجد تنبيهات حالية.</p>`;
+  return insights.map(a=>`<div class="alert-box ${a.type}">${a.text}</div>`).join('');
+}
+
+function htmlDashboard(){
+  const sts=getStudents(),abs=getRecords('absences'),trd=getRecords('tardiness'),vio=getRecords('violations'),exc=getRecords('excellence');
+  const t=today();
+  const absToday=abs.filter(a=>a.date===t).length;
+  const trdToday=trd.filter(a=>a.date===t).length;
+  return `<div class="section active fade-in" id="sec-dashboard">
+<div class="stat-grid">
+<div class="stat-card"><div class="sc-icon">👨‍🎓</div><div class="sc-val">${sts.length}</div><div class="sc-label">إجمالي الطلاب</div></div>
+<div class="stat-card"><div class="sc-icon">📅</div><div class="sc-val">${absToday}</div><div class="sc-label">غيابات اليوم</div></div>
+<div class="stat-card"><div class="sc-icon">⚠️</div><div class="sc-val">${vio.length}</div><div class="sc-label">المخالفات المسجلة</div></div>
+<div class="stat-card"><div class="sc-icon">🏆</div><div class="sc-val">${exc.length}</div><div class="sc-label">سجلات التميز</div></div>
+<div class="stat-card"><div class="sc-icon">⏰</div><div class="sc-val">${trdToday}</div><div class="sc-label">متأخرون اليوم</div></div>
+</div>
+<div class="form-grid">
+  <div class="panel" style="padding:20px;grid-column:1/-1"><h3>التحليل الذكي والإنذارات</h3><div style="margin-top:16px">${generateAIInsights()}</div></div>
+  <div class="chart-area" style="margin-bottom:0"><h3>إحصائيات الأسبوع</h3><canvas id="weekChart"></canvas></div>
+  <div class="chart-area" style="margin-bottom:0"><h3>مقارنة الغياب بين الصفوف</h3><canvas id="gradeCompChart"></canvas></div>
+</div>
+</div>`;
+}
+
+function htmlStudents(){
+  return `<div class="section active fade-in" id="sec-students">
+<div class="panel"><div class="panel-header">
+<h3>قائمة الطلاب</h3><div class="spacer"></div>
+<input class="search-input" placeholder="بحث بالاسم أو الهوية..." oninput="Students.search(this.value)">
+<select class="filter-select" onchange="Students.filterGrade(this.value)"><option value="">كل الصفوف</option>${UI.gradeOptions()}</select>
+<select class="filter-select" onchange="Students.filterSection(this.value)"><option value="">كل الشعب</option>${UI.sectionOptions()}</select>
+<button class="btn btn-outline" onclick="Students.openTransfer()">🔄 نقل الطلاب</button>
+<button class="btn btn-primary" onclick="Students.openAdd()">+ إضافة طالب</button>
+</div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>الاسم</th><th>الهوية</th><th>الصف</th><th>الشعبة</th><th>ولي الأمر</th><th>صحي</th><th>الإجراء</th></tr></thead>
+<tbody id="studentsTable"></tbody></table></div></div></div>`;
+}
+
+function htmlAbsence(){
+  return `<div class="section active fade-in" id="sec-absence">
+<div class="panel"><div class="panel-header">
+<h3>سجل الغياب</h3><div class="spacer"></div>
+<input type="date" class="filter-select" style="width:160px" onchange="Absence.filterDate(this.value)">
+<button class="btn btn-outline" onclick="Absence.openBulkAdd()">📋 غياب جماعي</button>
+<button class="btn btn-primary" onclick="Absence.openAdd()">+ تسجيل غياب فردي</button>
+</div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>الطالب</th><th>التاريخ</th><th>النوع</th><th>ملاحظات</th><th>الإجراء</th></tr></thead>
+<tbody id="absenceTable"></tbody></table></div></div></div>`;
+}
+
+function htmlTardiness(){ return `<div class="section active fade-in" id="sec-tardiness"><div class="panel"><div class="panel-header"><h3>سجل التأخر</h3><div class="spacer"></div><button class="btn btn-primary" onclick="Tardiness.openAdd()">+ تسجيل تأخر</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>الطالب</th><th>التاريخ</th><th>وقت الدخول</th><th>الدقائق</th><th>الإجراء</th></tr></thead><tbody id="tardinessTable"></tbody></table></div></div></div>`; }
+function htmlPermissions(){ return `<div class="section active fade-in" id="sec-permissions"><div class="panel"><div class="panel-header"><h3>سجل الاستئذان</h3><div class="spacer"></div><button class="btn btn-primary" onclick="Permissions.openAdd()">+ تسجيل استئذان</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>الطالب</th><th>التاريخ</th><th>السبب</th><th>الخروج</th><th>العودة</th><th>المستلم</th><th>الإجراء</th></tr></thead><tbody id="permissionsTable"></tbody></table></div></div></div>`; }
+function htmlViolations(){ return `<div class="section active fade-in" id="sec-violations"><div class="panel"><div class="panel-header"><h3>سجل المخالفات</h3><div class="spacer"></div><button class="btn btn-primary" onclick="Violations.openAdd()">+ تسجيل مخالفة</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>الطالب</th><th>التاريخ</th><th>النوع</th><th>الإجراء المتخذ</th><th>المُبلغ</th><th>الإجراء</th></tr></thead><tbody id="violationsTable"></tbody></table></div></div></div>`; }
+function htmlExcellence(){ return `<div class="section active fade-in" id="sec-excellence"><div class="panel"><div class="panel-header"><h3>سجل التميز والمكافآت</h3><div class="spacer"></div><button class="btn btn-primary" onclick="Excellence.openAdd()">+ تسجيل تميز</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>الطالب</th><th>التاريخ</th><th>النوع</th><th>ملاحظات</th><th>الإجراء</th></tr></thead><tbody id="excellenceTable"></tbody></table></div></div></div>`; }
+function htmlCommunications(){ return `<div class="section active fade-in" id="sec-communications"><div class="panel"><div class="panel-header"><h3>تواصل أولياء الأمور</h3><div class="spacer"></div><button class="btn btn-primary" onclick="Communications.openAdd()">+ توثيق تواصل</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>الطالب</th><th>التاريخ</th><th>النوع</th><th>الملخص</th><th>النتيجة</th><th>الإجراء</th></tr></thead><tbody id="communicationsTable"></tbody></table></div></div></div>`; }
+function htmlAssembly(){ return `<div class="section active fade-in" id="sec-assembly"><div class="panel"><div class="panel-header"><h3>متابعة الانضباط الصباحي</h3><div class="spacer"></div><button class="btn btn-primary" onclick="Assembly.openAdd()">+ تقييم جديد</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>التاريخ</th><th>الصف</th><th>الشعبة</th><th>التقييم</th><th>ملاحظات</th><th>الإجراء</th></tr></thead><tbody id="assemblyTable"></tbody></table></div></div></div>`; }
+function htmlInspections(){ return `<div class="section active fade-in" id="sec-inspections"><div class="panel"><div class="panel-header"><h3>تفتيش الفصول</h3><div class="spacer"></div><button class="btn btn-primary" onclick="Inspections.openAdd()">+ تفتيش جديد</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>التاريخ</th><th>الصف</th><th>الشعبة</th><th>النظافة</th><th>الزي</th><th>ملاحظات</th><th>الإجراء</th></tr></thead><tbody id="inspectionsTable"></tbody></table></div></div></div>`; }
+function htmlDuties(){ return `<div class="section active fade-in" id="sec-duties"><div class="panel"><div class="panel-header"><h3>جدول المناوبات</h3><div class="spacer"></div><button class="btn btn-outline" onclick="Duties.print()">🖨️ طباعة الجدول</button><button class="btn btn-primary" onclick="Duties.openAdd()">+ إضافة مناوب</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>المعلم</th><th>اليوم</th><th>المكان</th><th>الإجراء</th></tr></thead><tbody id="dutiesTable"></tbody></table></div></div></div>`; }
+function htmlCalendar(){ return `<div class="section active fade-in" id="sec-calendar"><div class="panel"><div class="panel-header"><h3>التقويم الأكاديمي</h3><div class="spacer"></div><button class="btn btn-primary" onclick="Calendar.openAdd()">+ إضافة حدث</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>التاريخ</th><th>الحدث</th><th>النوع</th><th>الإجراء</th></tr></thead><tbody id="calendarTable"></tbody></table></div></div></div>`; }
+
+// New Sections HTML
+function htmlSubstitutes(){ return `<div class="section active fade-in" id="sec-substitutes"><div class="panel"><div class="panel-header"><h3>سجل حصص الانتظار (الاحتياط)</h3><div class="spacer"></div><button class="btn btn-primary" onclick="SubstituteClasses.openAdd()">+ إسناد حصة</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>التاريخ</th><th>المعلم الغائب</th><th>المعلم البديل</th><th>الحصة / الفصل</th><th>الإجراء</th></tr></thead><tbody id="substitutesTable"></tbody></table></div></div></div>`; }
+function htmlTeacherLeaves(){ return `<div class="section active fade-in" id="sec-teacherLeaves"><div class="panel"><div class="panel-header"><h3>استئذان وتأخر المعلمين</h3><div class="spacer"></div><button class="btn btn-primary" onclick="TeacherLeaves.openAdd()">+ تسجيل حالة</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>التاريخ</th><th>المعلم</th><th>النوع</th><th>الوقت</th><th>السبب/المدة</th><th>الإجراء</th></tr></thead><tbody id="teacherLeavesTable"></tbody></table></div></div></div>`; }
+function htmlMaintenance(){ return `<div class="section active fade-in" id="sec-maintenance"><div class="panel"><div class="panel-header"><h3>سجل بلاغات الصيانة</h3><div class="spacer"></div><button class="btn btn-primary" onclick="Maintenance.openAdd()">+ بلاغ جديد</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>التاريخ</th><th>المكان/الفصل</th><th>المشكلة</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody id="maintenanceTable"></tbody></table></div></div></div>`; }
+function htmlVisitors(){ return `<div class="section active fade-in" id="sec-visitors"><div class="panel"><div class="panel-header"><h3>سجل الزوار</h3><div class="spacer"></div><button class="btn btn-primary" onclick="Visitors.openAdd()">+ تسجيل زائر</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>التاريخ</th><th>اسم الزائر</th><th>وقت الدخول</th><th>وقت الخروج</th><th>السبب</th><th>الإجراء</th></tr></thead><tbody id="visitorsTable"></tbody></table></div></div></div>`; }
+function htmlLostFound(){ return `<div class="section active fade-in" id="sec-lostfound"><div class="panel"><div class="panel-header"><h3>المفقودات والموجودات</h3><div class="spacer"></div><button class="btn btn-primary" onclick="LostFound.openAdd()">+ تسجيل غرض</button></div><div class="tbl-wrap"><table><thead><tr><th>#</th><th>التاريخ</th><th>الغرض</th><th>الحالة</th><th>المسلم/المستلم</th><th>الإجراء</th></tr></thead><tbody id="lostfoundTable"></tbody></table></div></div></div>`; }
+
+function htmlBulkSMS(){
+  return `<div class="section active fade-in" id="sec-bulksms"><div class="panel" style="padding:24px"><h3>رسائل جماعية لأولياء الأمور</h3>
+<div class="form-grid" style="margin-top:16px"><div class="form-group"><label>الصف</label><select id="smsGrade"><option value="">كل الصفوف</option>${UI.gradeOptions()}</select></div>
+<div class="form-group"><label>الشعبة</label><select id="smsSection"><option value="">كل الشعب</option>${UI.sectionOptions()}</select></div>
+<div class="form-group full"><label>نص الرسالة</label><textarea id="smsText" rows="4" placeholder="اكتب رسالتك هنا..."></textarea></div>
+<div class="form-group full"><button class="btn btn-primary" onclick="Tools.generateSMS()">إنشاء قائمة الرسائل</button></div></div>
+<div id="smsResult" style="margin-top:20px;display:none"><hr style="border-color:var(--border);margin-bottom:16px"><div id="smsList" style="max-height:300px;overflow-y:auto;background:var(--surface2);padding:16px;border-radius:var(--radius)"></div></div></div></div>`;
+}
+
+function htmlFormsMaker(){
+  return `<div class="section active fade-in" id="sec-formsmaker"><div class="panel" style="padding:24px"><h3 style="margin-bottom:20px">صانع النماذج والشهادات</h3>
+<div class="form-grid"><div class="form-group full"><label>نوع النموذج</label>
+<select id="fmType"><option value="absence">تعهد غياب متكرر</option><option value="behavior">تعهد سلوكي</option><option value="summons">استدعاء ولي أمر</option><option value="thanks">شهادة شكر وتقدير</option></select></div>
+<div class="form-group full"><label>الطالب</label><select id="fmStudent"><option value="">اختر طالب</option>${UI.studentSelect()}</select></div>
+<div class="form-group full"><label>نص إضافي / سبب (اختياري)</label><input id="fmReason" placeholder="مثال: لغيابه 5 أيام متتالية، أو لتميزه في الإذاعة"></div>
+<div class="form-group full"><button class="btn btn-primary" onclick="FormsMaker.print()">🖨️ توليد وطباعة النموذج</button></div></div></div></div>`;
+}
+
+function htmlReports(){
+  return `<div class="section active fade-in" id="sec-reports"><div class="panel" style="padding:24px"><h3 style="margin-bottom:20px">التقارير الشاملة</h3><div class="form-grid">
+<div class="form-group"><label>تقرير طالب شامل (بطاقة السلوك)</label><select id="rptStudent"><option value="">اختر طالب</option>${UI.studentSelect()}</select></div>
+<div class="form-group"><label>&nbsp;</label><button class="btn btn-primary" onclick="Reports.studentReport()">عرض وطباعة التقرير</button></div>
+<div class="form-group"><label>تقرير مخالفات (من)</label><input type="date" id="rptVioFrom"></div><div class="form-group"><label>تقرير مخالفات (إلى)</label><input type="date" id="rptVioTo"></div>
+<div class="form-group full"><button class="btn btn-outline" onclick="Reports.violationsReport()">تقرير مخالفات للفترة</button></div></div></div></div>`;
+}
+
+function htmlSettings(){
+  const s=getSettings();
+  return `<div class="section active fade-in" id="sec-settings"><div class="panel" style="padding:24px"><h3 style="margin-bottom:20px">إعدادات النظام</h3><div class="form-grid">
+<div class="form-group"><label>اسم المدرسة</label><input id="setSchool" value="${escHtml(s.schoolName)}"></div><div class="form-group"><label>العام الدراسي</label><input id="setYear" value="${escHtml(s.academicYear)}"></div>
+<div class="form-group"><label>شعار المدرسة</label><input type="file" accept="image/*" id="setLogo" onchange="Settings.uploadLogo(this)"></div><div class="form-group"><label>كلمة المرور</label><input id="setPass" value="${escHtml(s.password)}"></div>
+<div class="form-group"><label>وقت بداية الدوام (لحساب التأخير)</label><input type="time" id="setStartTime" value="${s.schoolStartTime||'07:00'}"></div>
+<div class="form-group full"><button class="btn btn-primary" onclick="Settings.save()">حفظ الإعدادات</button></div></div>
+<hr style="margin:24px 0;border-color:var(--border)">
+<h3 style="margin-bottom:16px">استيراد أسماء الطلاب من ملف TXT</h3>
+<p style="font-size:12px;color:var(--text2);margin-bottom:12px">يجب أن يحتوي الملف على اسم طالب واحد في كل سطر. اختر الصف والشعبة ثم ارفع الملف.</p>
+<div class="form-grid" style="margin-bottom:16px">
+<div class="form-group"><label>الصف *</label><select id="importTxtGrade"><option value="">اختر الصف</option>${UI.gradeOptions()}</select></div>
+<div class="form-group"><label>الشعبة *</label><select id="importTxtSection"><option value="">اختر الشعبة</option>${UI.sectionOptions()}</select></div>
+<div class="form-group full"><label>ملف الأسماء (.txt)</label><input type="file" accept=".txt" id="importTxtFile"></div>
+<div class="form-group full"><button class="btn btn-primary" onclick="Settings.importTxt()">📥 استيراد الأسماء</button></div>
+</div>
+<hr style="margin:24px 0;border-color:var(--border)"><h3 style="margin-bottom:16px">النسخ الاحتياطي وإعادة الضبط</h3><div style="display:flex;gap:12px;flex-wrap:wrap">
+<button class="btn btn-accent" onclick="Settings.exportJSON()">تصدير نسخة احتياطية</button><button class="btn btn-outline" onclick="document.getElementById('importFile').click()">استيراد نسخة احتياطية</button>
+<input type="file" id="importFile" accept=".json" style="display:none" onchange="Settings.importJSON(this)"><button class="btn btn-danger" onclick="Settings.resetData()">إعادة تعيين البيانات</button></div></div></div>`;
+}
+
+function htmlProfile(sid){
+  const s=findStudent(sid);if(!s)return'<div class="empty-state"><p>لم يتم العثور على الطالب</p></div>';
+  const abs=getRecords('absences').filter(a=>a.studentId===sid), trd=getRecords('tardiness').filter(a=>a.studentId===sid);
+  const prm=getRecords('permissions').filter(a=>a.studentId===sid), vio=getRecords('violations').filter(a=>a.studentId===sid);
+  const exc=getRecords('excellence').filter(a=>a.studentId===sid), com=getRecords('communications').filter(a=>a.studentId===sid);
+  const ref=getRecords('referrals').filter(a=>a.studentId===sid), cus=getRecords('custodies').filter(a=>a.studentId===sid), rol=getRecords('roles').filter(a=>a.studentId===sid);
+  
+  const healthBadge = s.healthNotes ? `<span class="badge badge-danger" style="margin-right:8px">🏥 حالة صحية</span>` : '';
+  return `<div class="section active fade-in" id="sec-profile">
+<button class="btn btn-outline" onclick="App.navigate('students')" style="margin-bottom:16px">→ رجوع</button>
+<div class="profile-header"><div class="profile-photo">${s.photo?`<img src="${s.photo}">`:'<span>👤</span>'}</div>
+<div class="profile-info"><h2>${escHtml(s.name)}${healthBadge}</h2>
+<div class="meta"><span>🆔 ${escHtml(s.nationalId)}</span><span>📚 ${escHtml(s.grade)} / ${escHtml(s.section)}</span><span>📱 ${escHtml(s.parentPhone)}</span></div>
+${s.notes?`<p style="margin-top:8px;font-size:13px;color:var(--text2)">${escHtml(s.notes)}</p>`:''}</div>
+<div style="display:flex;gap:8px;align-self:center;flex-wrap:wrap;justify-content:center">
+<button class="btn btn-success btn-sm" onclick="Reports.whatsappReport('${sid}')">💬 إرسال واتساب</button>
+<button class="btn btn-accent btn-sm" onclick="Reports.studentReport('${sid}')">🖨️ التقرير الشامل</button>
+</div></div>
+<div class="profile-tabs">
+<button class="active" onclick="Profile.tab(this,'pAbsence')">الغياب (${abs.length})</button>
+<button onclick="Profile.tab(this,'pTardiness')">التأخر (${trd.length})</button>
+<button onclick="Profile.tab(this,'pViolations')">المخالفات (${vio.length})</button>
+<button onclick="Profile.tab(this,'pExcellence')">التميز (${exc.length})</button>
+<button onclick="Profile.tab(this,'pComms')">التواصل (${com.length})</button>
+<button onclick="Profile.tab(this,'pRef')">التحويلات (${ref.length})</button>
+<button onclick="Profile.tab(this,'pCus')">العهد (${cus.length})</button>
+<button onclick="Profile.tab(this,'pRol')">الأدوار (${rol.length})</button>
+<button onclick="Profile.tab(this,'pHealth')">السجل الصحي</button>
+</div>
+<div class="profile-section active" id="pAbsence">${abs.length?`<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>التاريخ</th><th>النوع</th><th>ملاحظات</th></tr></thead><tbody>${abs.map(a=>`<tr><td>${fmtDate(a.date)}</td><td><span class="badge ${a.type==='excused'?'badge-success':'badge-danger'}">${a.type==='excused'?'بعذر':'بدون عذر'}</span></td><td>${escHtml(a.notes)}</td></tr>`).join('')}</tbody></table></div></div>`:'<div class="empty-state"><p>لا يوجد غياب</p></div>'}</div>
+<div class="profile-section" id="pTardiness">${trd.length?`<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>التاريخ</th><th>الدخول</th><th>الدقائق</th></tr></thead><tbody>${trd.map(a=>`<tr><td>${fmtDate(a.date)}</td><td>${escHtml(a.arrivalTime)}</td><td>${a.minutes}</td></tr>`).join('')}</tbody></table></div></div>`:'<div class="empty-state"><p>لا يوجد تأخر</p></div>'}</div>
+<div class="profile-section" id="pViolations">${vio.length?`<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>التاريخ</th><th>النوع</th><th>الإجراء</th></tr></thead><tbody>${vio.map(a=>`<tr><td>${fmtDate(a.date)}</td><td>${escHtml(a.type)}</td><td>${escHtml(a.action)}</td></tr>`).join('')}</tbody></table></div></div>`:'<div class="empty-state"><p>لا يوجد مخالفات</p></div>'}</div>
+<div class="profile-section" id="pExcellence">${exc.length?`<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>التاريخ</th><th>النوع</th><th>ملاحظات</th></tr></thead><tbody>${exc.map(a=>`<tr><td>${fmtDate(a.date)}</td><td>${escHtml(a.type)}</td><td>${escHtml(a.notes)}</td></tr>`).join('')}</tbody></table></div></div>`:'<div class="empty-state"><p>لا يوجد سجل تميز</p></div>'}</div>
+<div class="profile-section" id="pComms">${com.length?`<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>التاريخ</th><th>النوع</th><th>النتيجة</th></tr></thead><tbody>${com.map(a=>`<tr><td>${fmtDate(a.date)}</td><td>${escHtml(a.type)}</td><td>${escHtml(a.result)}</td></tr>`).join('')}</tbody></table></div></div>`:'<div class="empty-state"><p>لا يوجد تواصل مسجل</p></div>'}</div>
+
+<div class="profile-section" id="pRef"><button class="btn btn-sm btn-primary" style="margin-bottom:10px" onclick="Profile.addRef('${sid}')">+ إضافة تحويل</button>${ref.length?`<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>التاريخ</th><th>الجهة</th><th>السبب</th><th>حذف</th></tr></thead><tbody>${ref.map(a=>`<tr><td>${fmtDate(a.date)}</td><td><span class="badge badge-info">${escHtml(a.dest)}</span></td><td>${escHtml(a.reason)}</td><td><button class="btn-icon" onclick="GenericCRUD('referrals').remove('${a.id}');setTimeout(()=>App.openProfile('${sid}'),100)">🗑️</button></td></tr>`).join('')}</tbody></table></div></div>`:'<div class="empty-state"><p>لا توجد تحويلات</p></div>'}</div>
+
+<div class="profile-section" id="pCus"><button class="btn btn-sm btn-primary" style="margin-bottom:10px" onclick="Profile.addCus('${sid}')">+ إضافة عهدة</button>${cus.length?`<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>التاريخ</th><th>الغرض</th><th>الحالة</th><th>حذف</th></tr></thead><tbody>${cus.map(a=>`<tr><td>${fmtDate(a.date)}</td><td>${escHtml(a.item)}</td><td><span class="badge ${a.status==='مستلمة'?'badge-success':a.status==='مفقودة'?'badge-danger':'badge-warning'}" style="cursor:pointer" onclick="Profile.toggleCus('${a.id}','${sid}')">${escHtml(a.status)}</span></td><td><button class="btn-icon" onclick="GenericCRUD('custodies').remove('${a.id}');setTimeout(()=>App.openProfile('${sid}'),100)">🗑️</button></td></tr>`).join('')}</tbody></table></div></div>`:'<div class="empty-state"><p>لا توجد عهد</p></div>'}</div>
+
+<div class="profile-section" id="pRol"><button class="btn btn-sm btn-primary" style="margin-bottom:10px" onclick="Profile.addRol('${sid}')">+ إضافة دور</button>${rol.length?`<div class="panel"><div class="tbl-wrap"><table><thead><tr><th>التاريخ</th><th>الدور/المهمة</th><th>حذف</th></tr></thead><tbody>${rol.map(a=>`<tr><td>${fmtDate(a.date)}</td><td><span class="badge badge-primary">${escHtml(a.role)}</span></td><td><button class="btn-icon" onclick="GenericCRUD('roles').remove('${a.id}');setTimeout(()=>App.openProfile('${sid}'),100)">🗑️</button></td></tr>`).join('')}</tbody></table></div></div>`:'<div class="empty-state"><p>لا توجد أدوار مسجلة</p></div>'}</div>
+
+<div class="profile-section" id="pHealth"><div class="panel" style="padding:20px"><h3>السجل الصحي للطوارئ</h3><textarea id="pHealthNotes" rows="4" placeholder="حساسية، أمراض مزمنة، أدوية...">${escHtml(s.healthNotes||'')}</textarea><button class="btn btn-primary" style="margin-top:10px" onclick="Profile.saveHealth('${sid}')">حفظ السجل الصحي</button></div></div>
+</div>`;
+}
+
+/* ---- MODULES LOGIC ---- */
+const Students={
+  _filter:{search:'',grade:'',section:''},
+  render(){
+    let list=getStudents(); const f=this._filter;
+    if(f.search){const q=f.search.toLowerCase();list=list.filter(s=>s.name.toLowerCase().includes(q)||s.nationalId.includes(q))}
+    if(f.grade)list=list.filter(s=>s.grade===f.grade);
+    if(f.section)list=list.filter(s=>s.section===f.section);
+    const tb=document.getElementById('studentsTable');if(!tb)return;
+    if(!list.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text3)">لا يوجد طلاب</td></tr>';return}
+    tb.innerHTML=list.map((s,i)=>`<tr><td>${i+1}</td>
+<td><a href="#" onclick="App.openProfile('${s.id}');return false" style="font-weight:600">${escHtml(s.name)}</a></td>
+<td>${escHtml(s.nationalId)}</td><td>${escHtml(s.grade)}</td><td>${escHtml(s.section)}</td><td>${escHtml(s.parentPhone)}</td>
+<td>${s.healthNotes?'<span title="يوجد سجل صحي">🏥</span>':'-'}</td>
+<td><div class="actions"><button class="btn-icon" title="تعديل" onclick="Students.openEdit('${s.id}')">✏️</button><button class="btn-icon" title="حذف" onclick="Students.remove('${s.id}')">🗑️</button><button class="btn-icon" title="ملف" onclick="App.openProfile('${s.id}')">📁</button></div></td></tr>`).join('');
+  },
+  search(v){this._filter.search=v;this.render()}, filterGrade(v){this._filter.grade=v;this.render()}, filterSection(v){this._filter.section=v;this.render()},
+  openAdd(){
+    UI.openModal('إضافة طالب',`<div class="form-grid"><div class="form-group"><label>الاسم *</label><input id="fName"></div><div class="form-group"><label>الهوية *</label><input id="fNatId"></div>
+<div class="form-group"><label>الصف *</label><select id="fGrade">${UI.gradeOptions()}</select></div><div class="form-group"><label>الشعبة *</label><select id="fSection">${UI.sectionOptions()}</select></div>
+<div class="form-group"><label>رقم الولي</label><input id="fPhone"></div><div class="form-group"><label>حالة صحية (اختياري)</label><input id="fHealth" placeholder="مثال: ربو، حساسية"></div></div>`,
+`<button class="btn btn-primary" onclick="Students.saveNew()">حفظ</button><button class="btn btn-outline" onclick="UI.closeModal()">إلغاء</button>`);
+  },
+  saveNew(){
+    const name=document.getElementById('fName').value.trim(), natId=document.getElementById('fNatId').value.trim();
+    if(!name||!natId){UI.toast('أكمل الحقول','danger');return}
+    const arr=getStudents();
+    arr.push({id:uid(),name,nationalId:natId,grade:document.getElementById('fGrade').value,section:document.getElementById('fSection').value,parentPhone:document.getElementById('fPhone').value.trim(),healthNotes:document.getElementById('fHealth').value.trim(),photo:'',notes:'',createdAt:today()});
+    saveStudents(arr);UI.closeModal();this.render();UI.toast('تمت الإضافة');
+  },
+  openEdit(id){
+    const s=findStudent(id);if(!s)return;
+    UI.openModal('تعديل طالب',`<div class="form-grid"><div class="form-group"><label>الاسم</label><input id="eName" value="${escHtml(s.name)}"></div><div class="form-group"><label>الهوية</label><input id="eNatId" value="${escHtml(s.nationalId)}"></div>
+<div class="form-group"><label>الصف</label><select id="eGrade">${UI.gradeOptions(s.grade)}</select></div><div class="form-group"><label>الشعبة</label><select id="eSection">${UI.sectionOptions(s.section)}</select></div>
+<div class="form-group"><label>رقم الولي</label><input id="ePhone" value="${escHtml(s.parentPhone)}"></div><div class="form-group"><label>حالة صحية</label><input id="eHealth" value="${escHtml(s.healthNotes||'')}"></div></div>`,
+`<button class="btn btn-primary" onclick="Students.saveEdit('${id}')">حفظ</button>`);
+  },
+  saveEdit(id){
+    const arr=getStudents();const idx=arr.findIndex(s=>s.id===id);if(idx<0)return;
+    arr[idx].name=document.getElementById('eName').value.trim(); arr[idx].nationalId=document.getElementById('eNatId').value.trim();
+    arr[idx].grade=document.getElementById('eGrade').value; arr[idx].section=document.getElementById('eSection').value;
+    arr[idx].parentPhone=document.getElementById('ePhone').value.trim(); arr[idx].healthNotes=document.getElementById('eHealth').value.trim();
+    saveStudents(arr);UI.closeModal();this.render();UI.toast('تم التحديث');
+  },
+  remove(id){UI.confirm('حذف الطالب وسجلاته؟',()=>{saveStudents(getStudents().filter(s=>s.id!==id));['absences','tardiness','permissions','violations','excellence','communications','referrals','custodies','roles'].forEach(k=>saveRecords(k,getRecords(k).filter(r=>r.studentId!==id)));this.render();UI.toast('تم الحذف')})},
+  openTransfer(){
+    UI.openModal('نقل جماعي للطلاب',`<div class="form-grid"><div class="form-group full"><p style="font-size:12px;color:var(--text2)">اختر الصف والشعبة الحالية، ثم حدد الصف والشعبة الجديدة لنقل جميع طلابها.</p></div>
+<div class="form-group"><label>من الصف</label><select id="trFromGrade">${UI.gradeOptions()}</select></div><div class="form-group"><label>من الشعبة</label><select id="trFromSec">${UI.sectionOptions()}</select></div>
+<div class="form-group"><label>إلى الصف</label><select id="trToGrade">${UI.gradeOptions()}</select></div><div class="form-group"><label>إلى الشعبة</label><select id="trToSec">${UI.sectionOptions()}</select></div></div>`,
+`<button class="btn btn-primary" onclick="Students.executeTransfer()">تنفيذ النقل</button><button class="btn btn-outline" onclick="UI.closeModal()">إلغاء</button>`);
+  },
+  executeTransfer(){
+    const fg=document.getElementById('trFromGrade').value, fs=document.getElementById('trFromSec').value;
+    const tg=document.getElementById('trToGrade').value, ts=document.getElementById('trToSec').value;
+    let arr=getStudents(), cnt=0;
+    arr.forEach(s=>{if(s.grade===fg&&s.section===fs){s.grade=tg;s.section=ts;cnt++;}});
+    if(cnt===0) return UI.toast('لا يوجد طلاب في الفصل المحدد','warning');
+    saveStudents(arr); UI.closeModal(); this.render(); UI.toast(`تم نقل ${cnt} طالب بنجاح`);
+  }
+};
+
+const Absence={
+  _filterDate:'',
+  render(){
+    let list=getRecords('absences'); if(this._filterDate)list=list.filter(a=>a.date===this._filterDate);
+    list.sort((a,b)=>b.date.localeCompare(a.date));
+    const tb=document.getElementById('absenceTable');if(!tb)return;
+    if(!list.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text3)">لا يوجد غياب</td></tr>';return}
+    tb.innerHTML=list.map((a,i)=>`<tr><td>${i+1}</td><td>${escHtml(studentName(a.studentId))}</td><td>${fmtDate(a.date)}</td><td><span class="badge ${a.type==='excused'?'badge-success':'badge-danger'}">${a.type==='excused'?'بعذر':'بدون عذر'}</span></td><td>${escHtml(a.notes)}</td><td><div class="actions"><button class="btn-icon" onclick="Absence.remove('${a.id}')">🗑️</button></div></td></tr>`).join('');
+  },
+  filterDate(v){this._filterDate=v;this.render()},
+  openAdd(){
+    UI.openModal('غياب فردي',`<div class="form-grid"><div class="form-group full"><label>الطالب *</label><select id="aStudent">${UI.studentSelect()}</select></div><div class="form-group"><label>التاريخ *</label><input type="date" id="aDate" value="${today()}"></div><div class="form-group"><label>النوع</label><select id="aType"><option value="unexcused">بدون عذر</option><option value="excused">بعذر</option></select></div></div>`,`<button class="btn btn-primary" onclick="Absence.save()">حفظ</button>`);
+  },
+  save(){
+    const sid=document.getElementById('aStudent').value, d=document.getElementById('aDate').value;
+    if(!sid||!d){ UI.toast('يرجى تعبئة الحقول المطلوبة', 'danger'); return; }
+    const arr=getRecords('absences'); arr.push({id:uid(),studentId:sid,date:d,type:document.getElementById('aType').value,notes:'',createdAt:today()});
+    saveRecords('absences',arr); UI.closeModal(); this.render(); UI.toast('تم التسجيل');
+  },
+  remove(id){UI.confirm('حذف سجل الغياب؟',()=>{saveRecords('absences',getRecords('absences').filter(a=>a.id!==id));this.render();UI.toast('تم الحذف')})},
+  openBulkAdd(){
+    UI.openModal('تسجيل غياب جماعي',`<div class="form-grid"><div class="form-group"><label>الصف</label><select id="bkGrade">${UI.gradeOptions()}</select></div><div class="form-group"><label>الشعبة</label><select id="bkSection">${UI.sectionOptions()}</select></div><div class="form-group full"><button class="btn btn-outline" style="width:100%" onclick="Absence.loadBulk()">تحميل القائمة</button></div></div><div id="bulkWrap" style="margin-top:16px;max-height:40vh;overflow-y:auto"></div>`,`<button class="btn btn-primary" onclick="Absence.saveBulk()">حفظ الغياب المحدد</button><button class="btn btn-outline" onclick="UI.closeModal()">إلغاء</button>`,true);
+  },
+  loadBulk(){
+    const g=document.getElementById('bkGrade').value, s=document.getElementById('bkSection').value;
+    const sts=getStudents().filter(x=>x.grade===g&&x.section===s);
+    const wrap=document.getElementById('bulkWrap');
+    if(!sts.length){wrap.innerHTML='<p style="text-align:center;color:var(--text3)">لا يوجد طلاب في هذا الفصل</p>';return}
+    wrap.innerHTML=`<table style="width:100%;font-size:13px"><thead><tr><th>الطالب</th><th style="text-align:center">حاضر</th><th style="text-align:center">غائب (بدون عذر)</th><th style="text-align:center">غائب (بعذر)</th></tr></thead><tbody>
+    ${sts.map(st=>`<tr><td>${escHtml(st.name)}</td>
+    <td style="text-align:center"><input type="radio" name="blk_${st.id}" value="present" checked style="width:auto"></td>
+    <td style="text-align:center"><input type="radio" name="blk_${st.id}" value="unexcused" style="width:auto"></td>
+    <td style="text-align:center"><input type="radio" name="blk_${st.id}" value="excused" style="width:auto"></td></tr>`).join('')}</tbody></table>`;
+  },
+  saveBulk(){
+    const sts=getStudents(); let added=0; const arr=getRecords('absences'), d=today();
+    sts.forEach(st=>{
+      const rad=document.querySelector(`input[name="blk_${st.id}"]:checked`);
+      if(rad && rad.value!=='present'){
+        arr.push({id:uid(),studentId:st.id,date:d,type:rad.value,notes:'',createdAt:d}); added++;
+      }
+    });
+    if(added>0){ saveRecords('absences',arr); this.render(); UI.toast(`تم تسجيل غياب ${added} طلاب`); }
+    UI.closeModal();
+  }
+};
+
+const GenericCRUD = (name, title, fields, renderRow, moduleName) => ({
+  render(){
+    const list=getRecords(name).sort((a,b)=>(b.date && a.date) ? b.date.localeCompare(a.date) : 0);
+    const tb=document.getElementById(`${name}Table`);if(!tb)return;
+    if(!list.length){tb.innerHTML=`<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text3)">لا يوجد سجلات</td></tr>`;return}
+    tb.innerHTML=list.map((a,i)=>renderRow(a,i)).join('');
+  },
+  openAdd(){
+    const html=fields.map(f=>`<div class="form-group ${f.full?'full':''}"><label>${f.label}</label>${typeof f.html==='function'?f.html():f.html}</div>`).join('');
+    UI.openModal(`إضافة ${title}`,`<div class="form-grid">${html}</div>`,`<button class="btn btn-primary" onclick="${moduleName}.save()">حفظ</button><button class="btn btn-outline" onclick="UI.closeModal()">إلغاء</button>`);
+  },
+  save(customObj=null){
+    const obj = customObj || {id:uid(), createdAt:today()};
+    if(!customObj){
+      for(let f of fields){
+        const el=document.getElementById(f.id);
+        if(f.req&&(!el||!el.value)){UI.toast('أكمل الحقول','danger');return}
+        const propName = f.id.substring(f.id.indexOf('_') + 1);
+        if(el) obj[propName] = el.type==='radio' ? document.querySelector(`input[name="${el.name}"]:checked`)?.value : el.value;
+      }
+    }
+    const arr=getRecords(name); arr.push(obj); saveRecords(name,arr);
+    UI.closeModal(); 
+    if(this.render) this.render();
+    UI.toast('تم الحفظ');
+  },
+  remove(id){
+    UI.confirm('حذف السجل؟',()=>{
+      saveRecords(name,getRecords(name).filter(a=>a.id!==id)); 
+      if(this.render) this.render();
+      UI.toast('تم الحذف');
+    });
+  }
+});
+
+const Tardiness = {
+  ...GenericCRUD('tardiness','تأخر',[
+    {full:true, label:'الطالب *', req:true, id:'t_studentId', html:()=>`<select id="t_studentId"><option value="">اختر</option>${UI.studentSelect()}</select>`},
+    {label:'التاريخ *', req:true, id:'t_date', html:()=>`<input type="date" id="t_date" value="${today()}">`},
+    {label:'وقت الدخول', req:true, id:'t_arrivalTime', html:()=>`<input type="time" id="t_arrivalTime" onchange="Tardiness.calcMins(this.value)">`},
+    {label:'الدقائق', req:true, id:'t_minutes', html:()=>`<input type="number" id="t_minutes" min="0">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${escHtml(studentName(a.studentId))}</td><td>${fmtDate(a.date)}</td><td>${a.arrivalTime}</td><td>${a.minutes}</td><td><button class="btn-icon" onclick="Tardiness.remove('${a.id}')">🗑️</button></td></tr>`, 'Tardiness'),
+  calcMins(timeStr){
+    if(!timeStr) return;
+    const start = getSettings().schoolStartTime || '07:00';
+    const [sH, sM] = start.split(':').map(Number);
+    const [eH, eM] = timeStr.split(':').map(Number);
+    let diff = (eH * 60 + eM) - (sH * 60 + sM);
+    document.getElementById('t_minutes').value = diff > 0 ? diff : 0;
+  }
+};
+
+const Permissions = {
+  ...GenericCRUD('permissions','استئذان',[
+    {full:true, label:'الطالب *', req:true, id:'p_studentId', html:()=>`<select id="p_studentId"><option value="">اختر</option>${UI.studentSelect()}</select>`},
+    {label:'التاريخ *', req:true, id:'p_date', html:()=>`<input type="date" id="p_date" value="${today()}">`},
+    {label:'السبب', req:true, id:'p_reason', html:()=>`<input id="p_reason">`},
+    {label:'وقت الخروج', req:true, id:'p_exitTime', html:()=>`<input type="time" id="p_exitTime">`},
+    {label:'العودة', id:'p_returnTime', html:()=>`<div style="display:flex;gap:6px"><input type="time" id="p_returnTime" style="flex:1"><button type="button" class="btn btn-outline btn-sm" onclick="const el=document.getElementById('p_returnTime'); if(el.type==='time'){el.type='text';el.value='آخر الدوام';this.innerText='وقت';}else{el.type='time';el.value='';this.innerText='آخر الدوام';}" style="padding:4px 8px;font-size:12px;white-space:nowrap">آخر الدوام</button></div>`},
+    {label:'المستلم', req:true, id:'p_receiver', html:()=>`<input id="p_receiver">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${escHtml(studentName(a.studentId))}</td><td>${fmtDate(a.date)}</td><td>${escHtml(a.reason)}</td><td>${a.exitTime}</td><td>${a.returnTime||'-'}</td><td>${escHtml(a.receiver)}</td><td><div class="actions"><button class="btn-icon" title="طباعة تصريح" onclick="Permissions.printPass('${a.id}')">🖨️</button><button class="btn-icon" onclick="Permissions.remove('${a.id}')">🗑️</button></div></td></tr>`, 'Permissions'),
+  printPass(id){
+    const a=getRecords('permissions').find(x=>x.id===id);if(!a)return;
+    const s=findStudent(a.studentId);if(!s)return;
+    const qrData = encodeURIComponent(`طالب:${s.name}|خروج:${a.exitTime}|سبب:${a.reason}`);
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${qrData}`;
+    let h=`<h2>بطاقة خروج واستئذان طالب</h2>
+    <div style="border:2px solid var(--primary);padding:15px;border-radius:10px;margin-top:20px">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div>
+        <p><strong>اسم الطالب:</strong> ${escHtml(s.name)}</p>
+        <p><strong>الصف:</strong> ${escHtml(s.grade)}/${escHtml(s.section)}</p>
+        <p><strong>التاريخ:</strong> ${fmtDate(a.date)}</p>
+        <p><strong>وقت الخروج:</strong> ${a.exitTime}</p>
+        <p><strong>العودة المتوقعة:</strong> ${a.returnTime}</p>
+        <p><strong>المستلم:</strong> ${escHtml(a.receiver)}</p>
+      </div>
+      <div class="qr-code"><img src="${qrUrl}" alt="QR Code" style="border:1px solid #ddd;padding:4px"><p style="font-size:10px;color:#666;margin-top:4px">للمسح عند البوابة</p></div>
+    </div>
+    </div>
+    <div class="stamp" style="margin-top:50px"><div>توقيع المستلم<span></span></div><div>توقيع الوكيل<span></span></div><div>ختم البوابة<span></span></div></div>`;
+    openPrint('تصريح خروج', h);
+  }
+};
+
+const Violations = {
+  ...GenericCRUD('violations','مخالفة',[
+    {full:true, label:'الطالب *', req:true, id:'v_studentId', html:()=>`<select id="v_studentId"><option value="">اختر</option>${UI.studentSelect()}</select>`},
+    {label:'التاريخ *', req:true, id:'v_date', html:()=>`<input type="date" id="v_date" value="${today()}">`},
+    {label:'النوع *', req:true, id:'v_type', html:()=>`<select id="v_type">${VIOLATION_TYPES.map(v=>`<option>${v}</option>`).join('')}</select>`},
+    {label:'الإجراء', req:true, id:'v_action', html:()=>`<select id="v_action">${ACTIONS_LIST.map(v=>`<option>${v}</option>`).join('')}</select>`},
+    {label:'المبلغ', id:'v_reporter', html:()=>`<input id="v_reporter">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${escHtml(studentName(a.studentId))}</td><td>${fmtDate(a.date)}</td><td><span class="badge badge-danger">${escHtml(a.type)}</span></td><td>${escHtml(a.action)}</td><td>${escHtml(a.reporter)}</td><td><button class="btn-icon" onclick="Violations.remove('${a.id}')">🗑️</button></td></tr>`, 'Violations')
+};
+
+const Excellence = {
+  ...GenericCRUD('excellence','تميز',[
+    {full:true, label:'الطالب *', req:true, id:'e_studentId', html:()=>`<select id="e_studentId"><option value="">اختر</option>${UI.studentSelect()}</select>`},
+    {label:'التاريخ *', req:true, id:'e_date', html:()=>`<input type="date" id="e_date" value="${today()}">`},
+    {label:'النوع *', req:true, id:'e_type', html:()=>`<select id="e_type">${EXCELLENCE_TYPES.map(v=>`<option>${v}</option>`).join('')}</select>`},
+    {full:true, label:'ملاحظات', id:'e_notes', html:()=>`<input id="e_notes">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${escHtml(studentName(a.studentId))}</td><td>${fmtDate(a.date)}</td><td><span class="badge badge-success">${escHtml(a.type)}</span></td><td>${escHtml(a.notes)}</td><td><button class="btn-icon" onclick="Excellence.remove('${a.id}')">🗑️</button></td></tr>`, 'Excellence')
+};
+
+const Communications = {
+  ...GenericCRUD('communications','تواصل',[
+    {full:true, label:'الطالب *', req:true, id:'c_studentId', html:()=>`<select id="c_studentId"><option value="">اختر</option>${UI.studentSelect()}</select>`},
+    {label:'التاريخ *', req:true, id:'c_date', html:()=>`<input type="date" id="c_date" value="${today()}">`},
+    {label:'النوع *', req:true, id:'c_type', html:()=>`<select id="c_type">${COMM_TYPES.map(v=>`<option>${v}</option>`).join('')}</select>`},
+    {full:true, label:'الملخص', req:true, id:'c_summary', html:()=>`<input id="c_summary">`},
+    {full:true, label:'النتيجة', id:'c_result', html:()=>`<input id="c_result">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${escHtml(studentName(a.studentId))}</td><td>${fmtDate(a.date)}</td><td>${escHtml(a.type)}</td><td>${escHtml(a.summary)}</td><td>${escHtml(a.result)}</td><td><button class="btn-icon" onclick="Communications.remove('${a.id}')">🗑️</button></td></tr>`, 'Communications')
+};
+
+const Assembly = {
+  ...GenericCRUD('assembly','تقييم طابور',[
+    {label:'التاريخ *', req:true, id:'as_date', html:()=>`<input type="date" id="as_date" value="${today()}">`},
+    {label:'التقييم', req:true, id:'as_rating', html:()=>`<select id="as_rating"><option>ممتاز</option><option>جيد</option><option>ضعيف</option></select>`},
+    {label:'الصف', req:true, id:'as_grade', html:()=>`<select id="as_grade">${UI.gradeOptions()}</select>`},
+    {label:'الشعبة', req:true, id:'as_section', html:()=>`<select id="as_section">${UI.sectionOptions()}</select>`},
+    {full:true, label:'ملاحظات', id:'as_notes', html:()=>`<input id="as_notes">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${fmtDate(a.date)}</td><td>${escHtml(a.grade)}</td><td>${escHtml(a.section)}</td><td><span class="badge ${a.rating==='ممتاز'?'badge-success':a.rating==='جيد'?'badge-warning':'badge-danger'}">${a.rating}</span></td><td>${escHtml(a.notes)}</td><td><button class="btn-icon" onclick="Assembly.remove('${a.id}')">🗑️</button></td></tr>`, 'Assembly')
+};
+
+const Inspections = {
+  ...GenericCRUD('inspections','تفتيش فصل',[
+    {label:'التاريخ *', req:true, id:'in_date', html:()=>`<input type="date" id="in_date" value="${today()}">`},
+    {label:'الصف', req:true, id:'in_grade', html:()=>`<select id="in_grade">${UI.gradeOptions()}</select>`},
+    {label:'الشعبة', req:true, id:'in_section', html:()=>`<select id="in_section">${UI.sectionOptions()}</select>`},
+    {label:'النظافة', req:true, id:'in_clean', html:()=>`<select id="in_clean"><option>ممتاز</option><option>جيد</option><option>ضعيف</option></select>`},
+    {label:'الزي', req:true, id:'in_uniform', html:()=>`<select id="in_uniform"><option>ممتاز</option><option>جيد</option><option>ضعيف</option></select>`},
+    {full:true, label:'ملاحظات', id:'in_notes', html:()=>`<input id="in_notes">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${fmtDate(a.date)}</td><td>${escHtml(a.grade)}</td><td>${escHtml(a.section)}</td><td>${a.clean}</td><td>${a.uniform}</td><td>${escHtml(a.notes)}</td><td><button class="btn-icon" onclick="Inspections.remove('${a.id}')">🗑️</button></td></tr>`, 'Inspections')
+};
+
+const Duties = {
+  ...GenericCRUD('duties','مناوب',[
+    {full:true, label:'المعلم *', req:true, id:'du_teacher', html:()=>`<input id="du_teacher">`},
+    {label:'اليوم', req:true, id:'du_day', html:()=>`<select id="du_day"><option>الأحد</option><option>الإثنين</option><option>الثلاثاء</option><option>الأربعاء</option><option>الخميس</option></select>`},
+    {label:'المكان', req:true, id:'du_location', html:()=>`<input id="du_location" placeholder="الساحة، البوابة...">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${escHtml(a.teacher)}</td><td>${escHtml(a.day)}</td><td>${escHtml(a.location)}</td><td><button class="btn-icon" onclick="Duties.remove('${a.id}')">🗑️</button></td></tr>`, 'Duties'),
+  print(){
+    const list=getRecords('duties');
+    let h=`<h2>جدول المناوبات الأسبوعي</h2><table><thead><tr><th>المعلم</th><th>اليوم</th><th>المكان</th></tr></thead><tbody>${list.map(d=>`<tr><td>${escHtml(d.teacher)}</td><td>${d.day}</td><td>${escHtml(d.location)}</td></tr>`).join('')}</tbody></table>`;
+    openPrint('جدول المناوبات',h);
+  }
+};
+
+const Calendar = {
+  ...GenericCRUD('calendar','حدث أكاديمي',[
+    {label:'التاريخ *', req:true, id:'ca_date', html:()=>`<input type="date" id="ca_date" value="${today()}">`},
+    {label:'النوع', req:true, id:'ca_type', html:()=>`<select id="ca_type"><option>اختبار</option><option>إجازة</option><option>نشاط</option><option>اجتماع</option></select>`},
+    {full:true, label:'الحدث *', req:true, id:'ca_title', html:()=>`<input id="ca_title">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${fmtDate(a.date)}</td><td>${escHtml(a.title)}</td><td><span class="badge badge-primary">${a.type}</span></td><td><button class="btn-icon" onclick="Calendar.remove('${a.id}')">🗑️</button></td></tr>`, 'Calendar')
+};
+
+// NEW CRUDs
+const SubstituteClasses = {
+  ...GenericCRUD('substitutes','حصة انتظار',[
+    {label:'التاريخ *', req:true, id:'su_date', html:()=>`<input type="date" id="su_date" value="${today()}">`},
+    {label:'الحصة / الفصل *', req:true, id:'su_lesson', html:()=>`<input id="su_lesson" placeholder="مثال: الثالثة - 2/أ">`},
+    {label:'المعلم الغائب *', req:true, id:'su_absent', html:()=>`<input id="su_absent">`},
+    {label:'المعلم البديل *', req:true, id:'su_substitute', html:()=>`<input id="su_substitute">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${fmtDate(a.date)}</td><td>${escHtml(a.absent)}</td><td><span class="badge badge-info">${escHtml(a.substitute)}</span></td><td>${escHtml(a.lesson)}</td><td><button class="btn-icon" onclick="SubstituteClasses.remove('${a.id}')">🗑️</button></td></tr>`, 'SubstituteClasses')
+};
+
+const TeacherLeaves = {
+  ...GenericCRUD('teacherLeaves','استئذان/تأخر معلم',[
+    {full:true, label:'المعلم *', req:true, id:'tl_teacher', html:()=>`<input id="tl_teacher">`},
+    {label:'التاريخ *', req:true, id:'tl_date', html:()=>`<input type="date" id="tl_date" value="${today()}">`},
+    {label:'النوع *', req:true, id:'tl_type', html:()=>`<select id="tl_type"><option>تأخر صباحي</option><option>استئذان</option></select>`},
+    {label:'الوقت', req:true, id:'tl_time', html:()=>`<input type="time" id="tl_time">`},
+    {label:'السبب / المدة', id:'tl_reason', html:()=>`<input id="tl_reason">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${fmtDate(a.date)}</td><td>${escHtml(a.teacher)}</td><td><span class="badge ${a.type==='استئذان'?'badge-warning':'badge-danger'}">${escHtml(a.type)}</span></td><td>${a.time}</td><td>${escHtml(a.reason)}</td><td><button class="btn-icon" onclick="TeacherLeaves.remove('${a.id}')">🗑️</button></td></tr>`, 'TeacherLeaves')
+};
+
+const Maintenance = {
+  ...GenericCRUD('maintenance','بلاغ صيانة',[
+    {label:'التاريخ *', req:true, id:'mn_date', html:()=>`<input type="date" id="mn_date" value="${today()}">`},
+    {label:'المكان / الفصل *', req:true, id:'mn_location', html:()=>`<input id="mn_location" placeholder="مثال: معمل العلوم، فصل 1/أ">`},
+    {full:true, label:'وصف المشكلة *', req:true, id:'mn_issue', html:()=>`<textarea id="mn_issue" rows="2"></textarea>`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${fmtDate(a.date)}</td><td>${escHtml(a.location)}</td><td>${escHtml(a.issue)}</td><td><span class="badge ${a.status==='مغلق'?'badge-success':'badge-danger'}" style="cursor:pointer" onclick="Maintenance.toggle('${a.id}')">${a.status||'مفتوح'}</span></td><td><button class="btn-icon" onclick="Maintenance.remove('${a.id}')">🗑️</button></td></tr>`, 'Maintenance'),
+  toggle(id){
+    let arr = getRecords('maintenance'); let item = arr.find(x => x.id === id);
+    item.status = item.status === 'مغلق' ? 'مفتوح' : 'مغلق';
+    saveRecords('maintenance', arr); this.render(); UI.toast('تم تحديث الحالة');
+  }
+};
+
+const Visitors = {
+  ...GenericCRUD('visitors','زائر',[
+    {label:'التاريخ *', req:true, id:'vi_date', html:()=>`<input type="date" id="vi_date" value="${today()}">`},
+    {label:'اسم الزائر *', req:true, id:'vi_name', html:()=>`<input id="vi_name">`},
+    {label:'وقت الدخول *', req:true, id:'vi_inTime', html:()=>`<input type="time" id="vi_inTime">`},
+    {label:'وقت الخروج', id:'vi_outTime', html:()=>`<input type="time" id="vi_outTime">`},
+    {full:true, label:'سبب الزيارة', id:'vi_reason', html:()=>`<input id="vi_reason">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${fmtDate(a.date)}</td><td>${escHtml(a.name)}</td><td>${a.inTime}</td><td>${a.outTime||'-'}</td><td>${escHtml(a.reason)}</td><td><button class="btn-icon" onclick="Visitors.remove('${a.id}')">🗑️</button></td></tr>`, 'Visitors')
+};
+
+const LostFound = {
+  ...GenericCRUD('lostfound','مفقودات',[
+    {label:'التاريخ *', req:true, id:'lf_date', html:()=>`<input type="date" id="lf_date" value="${today()}">`},
+    {label:'الغرض *', req:true, id:'lf_item', html:()=>`<input id="lf_item">`},
+    {label:'الحالة *', req:true, id:'lf_status', html:()=>`<select id="lf_status"><option>موجود (تم العثور عليه)</option><option>مفقود (يتم البحث عنه)</option></select>`},
+    {label:'المسلم / المستلم', id:'lf_person', html:()=>`<input id="lf_person">`}
+  ], (a,i)=>`<tr><td>${i+1}</td><td>${fmtDate(a.date)}</td><td>${escHtml(a.item)}</td><td><span class="badge ${a.status.includes('موجود')?'badge-success':(a.status==='تم التسليم'?'badge-primary':'badge-warning')}" style="cursor:pointer" onclick="LostFound.toggle('${a.id}')">${escHtml(a.status)}</span></td><td>${escHtml(a.person)}</td><td><button class="btn-icon" onclick="LostFound.remove('${a.id}')">🗑️</button></td></tr>`, 'LostFound'),
+  toggle(id){
+    let arr = getRecords('lostfound'); let item = arr.find(x => x.id === id);
+    if(item.status.includes('موجود')) Object.assign(item, {status: 'تم التسليم'});
+    else Object.assign(item, {status: 'موجود (تم العثور عليه)'});
+    saveRecords('lostfound', arr); this.render();
+  }
+};
+
+
+const Tools = {
+  generateSMS(){
+    const g=document.getElementById('smsGrade').value, s=document.getElementById('smsSection').value;
+    const msg=document.getElementById('smsText').value.trim();
+    if(!msg){UI.toast('اكتب نص الرسالة','danger');return;}
+    let sts=getStudents();
+    if(g) sts=sts.filter(x=>x.grade===g); if(s) sts=sts.filter(x=>x.section===s);
+    sts=sts.filter(x=>x.parentPhone);
+    const res=document.getElementById('smsResult'), list=document.getElementById('smsList');
+    res.style.display='block';
+    if(!sts.length){list.innerHTML='<p>لا توجد أرقام هواتف مطابقة.</p>';return}
+    list.innerHTML=sts.map(st=>`<div style="margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+      <strong style="color:var(--primary)">${escHtml(st.name)} (${escHtml(st.parentPhone)})</strong>
+      <p style="font-size:12px;margin-top:4px">${escHtml(msg)}</p>
+    </div>`).join('');
+    const copyTxt=sts.map(st=>`${st.parentPhone}\n${msg}`).join('\n\n');
+    list.innerHTML += `<button class="btn btn-success" onclick="navigator.clipboard.writeText(\`${copyTxt}\`);UI.toast('تم نسخ جميع الرسائل')">📋 نسخ جميع الأرقام والرسائل</button>`;
+  }
+};
+
+const FormsMaker = {
+  print(){
+    const type=document.getElementById('fmType').value;
+    const sid=document.getElementById('fmStudent').value;
+    const reason=document.getElementById('fmReason').value.trim();
+    if(!sid){UI.toast('اختر طالب','danger');return;}
+    const s=findStudent(sid);
+    let title = '', body = '';
+    
+    if(type==='absence'){
+      title='تعهد غياب متكرر';
+      body = `<h2 style="text-align:center;margin:30px 0;font-size:20px;text-decoration:underline">نموذج تعهد غياب</h2>
+      <div class="form-content">
+      أقر أنا الموقع أدناه ولي أمر الطالب: <strong>${escHtml(s.name)}</strong> المقيد بالصف: <strong>${escHtml(s.grade)} / ${escHtml(s.section)}</strong><br>
+      بأن ابني قد تغيب عن المدرسة بدون عذر مقبول ${reason?`بسبب (${escHtml(reason)})`:''}.<br>
+      وأتعهد بمتابعة حضوره وانصرافه وعدم تكرار الغياب مستقبلاً، وأتحمل كافة الإجراءات النظامية المترتبة على ذلك حسب لوائح وزارة التعليم.
+      </div>
+      <div class="stamp" style="margin-top:80px"><div>توقيع ولي الأمر<span></span></div><div>وكيل شؤون الطلاب<span></span></div></div>`;
+    }else if(type==='behavior'){
+      title='تعهد سلوكي';
+      body = `<h2 style="text-align:center;margin:30px 0;font-size:20px;text-decoration:underline">نموذج تعهد انضباط سلوكي</h2>
+      <div class="form-content">
+      أقر أنا الطالب: <strong>${escHtml(s.name)}</strong> من الصف: <strong>${escHtml(s.grade)} / ${escHtml(s.section)}</strong><br>
+      بأني قد قمت بمخالفة التعليمات المدرسية المتمثلة في: ${reason?`(${escHtml(reason)})`:'________________________'}.<br>
+      وأتعهد بالالتزام التام بالأنظمة والتعليمات المدرسية، وفي حال تكرار ذلك يحق لإدارة المدرسة تطبيق قواعد السلوك والمواظبة بحقي.
+      </div>
+      <div class="stamp" style="margin-top:80px"><div>توقيع الطالب<span></span></div><div>توقيع الموجه الطلابي/الوكيل<span></span></div></div>`;
+    }else if(type==='summons'){
+      title='استدعاء ولي أمر';
+      body = `<h2 style="text-align:center;margin:30px 0;font-size:20px;text-decoration:underline">إشعار استدعاء ولي أمر</h2>
+      <div class="form-content">
+      المكرم ولي أمر الطالب: <strong>${escHtml(s.name)}</strong> (الصف: ${escHtml(s.grade)}).<br>
+      السلام عليكم ورحمة الله وبركاته،،،<br>
+      نأمل منكم الحضور إلى إدارة المدرسة يوم: _________ الموافق: __ / __ / ____ هـ، وذلك لمناقشة مستوى ابنكم ${reason?`بخصوص: (${escHtml(reason)})`:'الدراسي والسلوكي'}.<br>
+      حضوركم دليل على تعاونكم المستمر لما فيه مصلحة الطالب.
+      </div>
+      <div class="stamp" style="margin-top:80px"><div>المرشد الطلابي<span></span></div><div>وكيل المدرسة<span></span></div></div>`;
+    }else if(type==='thanks'){
+      title='شهادة شكر وتقدير';
+      body = `<div style="border:4px double var(--accent);padding:40px;text-align:center;border-radius:15px;margin-top:20px">
+      <h1 style="color:var(--primary);font-size:28px;margin-bottom:20px">شهادة شكر وتقدير</h1>
+      <div class="form-content" style="font-size:18px;line-height:2.5">
+      تتقدم إدارة المدرسة بوافر الشكر وعظيم التقدير للطالب المتميز:<br>
+      <strong style="font-size:24px;color:var(--accent-light)">${escHtml(s.name)}</strong><br>
+      من الصف <strong>${escHtml(s.grade)} / ${escHtml(s.section)}</strong><br>
+      وذلك نظير تميزه وجهوده المبذولة ${reason?`في (${escHtml(reason)})`:'خلال العام الدراسي'}.<br>
+      متمنين له دوام التوفيق والنجاح.
+      </div>
+      <div class="stamp" style="margin-top:60px"><div>وكيل المدرسة<span></span></div><div>مدير المدرسة<span></span></div></div>
+      </div>`;
+    }
+    openPrint(title, body);
+  }
+};
+
+const Reports = {
+  studentReport(paramId){
+    const sid=paramId || document.getElementById('rptStudent')?.value;
+    if(!sid){UI.toast('اختر طالب','danger');return}
+    const s=findStudent(sid);if(!s)return;
+    const abs=getRecords('absences').filter(a=>a.studentId===sid), trd=getRecords('tardiness').filter(a=>a.studentId===sid);
+    const vio=getRecords('violations').filter(a=>a.studentId===sid), exc=getRecords('excellence').filter(a=>a.studentId===sid);
+    let h=`<h2>بطاقة السلوك والتميز للطالب: ${escHtml(s.name)}</h2>
+<div class="info-row"><span><strong>الهوية:</strong> ${escHtml(s.nationalId)}</span><span><strong>الصف:</strong> ${escHtml(s.grade)}/${escHtml(s.section)}</span></div>`;
+    h+=`<h2>التميز والمكافآت (${exc.length})</h2>`;
+    if(exc.length)h+=`<table><thead><tr><th>التاريخ</th><th>النوع</th><th>ملاحظات</th></tr></thead><tbody>${exc.map(a=>`<tr><td>${fmtDate(a.date)}</td><td>${escHtml(a.type)}</td><td>${escHtml(a.notes)}</td></tr>`).join('')}</tbody></table>`; else h+='<p>لا يوجد</p>';
+    h+=`<h2>الغياب والتأخر</h2><p>عدد أيام الغياب: <strong>${abs.length}</strong> | مرات التأخر: <strong>${trd.length}</strong></p>`;
+    h+=`<h2>المخالفات السلوكية (${vio.length})</h2>`;
+    if(vio.length)h+=`<table><thead><tr><th>التاريخ</th><th>النوع</th><th>الإجراء المتخذ</th></tr></thead><tbody>${vio.map(a=>`<tr><td>${fmtDate(a.date)}</td><td>${escHtml(a.type)}</td><td>${escHtml(a.action)}</td></tr>`).join('')}</tbody></table>`; else h+='<p>سلوك مثالي، لا يوجد مخالفات</p>';
+    if(s.notes||s.healthNotes) h+=`<h2>ملاحظات الوكيل والوضع الصحي</h2><p>${escHtml(s.notes)}</p><p style="color:red">${escHtml(s.healthNotes)}</p>`;
+    openPrint('بطاقة الطالب الشاملة',h);
+  },
+  violationsReport(){
+    const from=document.getElementById('rptVioFrom').value, to=document.getElementById('rptVioTo').value;
+    let list=getRecords('violations').sort((a,b)=>b.date.localeCompare(a.date));
+    if(from)list=list.filter(v=>v.date>=from); if(to)list=list.filter(v=>v.date<=to);
+    let h=`<h2>تقرير المخالفات${from?' من '+fmtDate(from):''}${to?' إلى '+fmtDate(to):''}</h2>`;
+    if(list.length)h+=`<table><thead><tr><th>الطالب</th><th>التاريخ</th><th>النوع</th><th>الإجراء</th></tr></thead><tbody>${list.map(a=>`<tr><td>${escHtml(studentName(a.studentId))}</td><td>${fmtDate(a.date)}</td><td>${escHtml(a.type)}</td><td>${escHtml(a.action)}</td></tr>`).join('')}</tbody></table>`;
+    else h+='<p>لا يوجد مخالفات</p>';
+    openPrint('تقرير مخالفات',h);
+  },
+  whatsappReport(sid){
+    const s = findStudent(sid);
+    if(!s) return;
+    
+    UI.openModal('إرسال تقرير عبر الواتساب', `
+      <div class="form-grid">
+        <div class="form-group full">
+          <label>رقم هاتف ولي الأمر (للمراسلة)</label>
+          <input type="text" id="waPhoneInput" value="${escHtml(s.parentPhone || '')}" placeholder="مثال: 05XXXXXXXX أو 9665XXXXXXXX" style="direction:ltr; text-align:right;">
+          <p style="font-size:11px; color:var(--text3); margin-top:4px;">تأكد من صحة الرقم. سيتم إضافة مفتاح الدولة تلقائياً إذا كان يبدأ بـ 05.</p>
+        </div>
+      </div>
+    `, `<button class="btn btn-success" onclick="Reports.executeWhatsapp('${sid}')">إرسال 💬</button><button class="btn btn-outline" onclick="UI.closeModal()">إلغاء</button>`);
+  },
+  executeWhatsapp(sid){
+    const s = findStudent(sid);
+    if(!s) return;
+    
+    const phoneInput = document.getElementById('waPhoneInput').value.trim();
+    if(!phoneInput) { UI.toast('يرجى إدخال رقم الهاتف أولاً', 'danger'); return; }
+
+    let phone = phoneInput.replace(/\D/g, '');
+    // تهيئة الرقم ليناسب كود السعودية إذا كان يبدأ بـ 05
+    if (phone.startsWith('05')) phone = '966' + phone.substring(1);
+
+    const abs = getRecords('absences').filter(a => a.studentId === sid).length;
+    const trd = getRecords('tardiness').filter(a => a.studentId === sid).length;
+    const prm = getRecords('permissions').filter(a => a.studentId === sid).length;
+    const vio = getRecords('violations').filter(a => a.studentId === sid).length;
+    const exc = getRecords('excellence').filter(a => a.studentId === sid).length;
+    const schoolName = getSettings().schoolName || 'مدرستي';
+
+    let msg = `🏫 *${schoolName}*\n\n`;
+    msg += `*تقرير متابعة الطالب:* ${s.name}\n`;
+    msg += `*الصف:* ${s.grade} / ${s.section}\n`;
+    msg += `────────────────\n`;
+    msg += `📊 *ملخص السجل:*\n`;
+    msg += `▪️ أيام الغياب: ${abs}\n`;
+    msg += `▪️ مرات التأخر: ${trd}\n`;
+    msg += `▪️ الاستئذان: ${prm}\n`;
+    msg += `▪️ المخالفات السلوكية: ${vio}\n`;
+    msg += `▪️ التميز والمكافآت: ${exc}\n\n`;
+
+    if (s.agentNotes) {
+      msg += `📝 *ملاحظات الإدارة:*\n${s.agentNotes}\n\n`;
+    }
+
+    msg += `نأمل منكم متابعة الطالب، ومشاركتنا في دعمه للوصول إلى أفضل مستوى.\n`;
+    msg += `مع تحيات،\n*وكيل شؤون الطلاب*`;
+
+    const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+    UI.closeModal();
+  }
+};
+
+const Settings={
+  _logoBase64:'',
+  uploadLogo(input){ if(input.files[0])UI.fileToBase64(input.files[0],b64=>{this._logoBase64=b64;UI.toast('تم رفع الشعار')}); },
+  save(){
+    const s=getSettings();
+    s.schoolName=document.getElementById('setSchool').value.trim()||'مدرستي';
+    s.academicYear=document.getElementById('setYear').value.trim()||'١٤٤٦ - ١٤٤٧ هـ';
+    s.password=document.getElementById('setPass').value.trim()||'admin';
+    s.schoolStartTime=document.getElementById('setStartTime').value||'07:00';
+    if(this._logoBase64)s.schoolLogo=this._logoBase64;
+    saveSettings(s); document.getElementById('sidebarSchoolName').textContent=s.schoolName; document.getElementById('sidebarYear').textContent=s.academicYear;
+    if(s.schoolLogo) document.getElementById('sidebarLogo').innerHTML = `<img src="${s.schoolLogo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    UI.toast('تم حفظ الإعدادات');
+  },
+  exportJSON(){
+    const keys = ['students','absences','tardiness','permissions','violations','excellence','communications','assembly','inspections','duties','calendar','substitutes','teacherLeaves','maintenance','visitors','lostfound','referrals','custodies','roles'];
+    let data = {settings:getSettings()};
+    keys.forEach(k=> data[k] = getRecords(k));
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='school_backup_'+today()+'.json';a.click();
+    UI.toast('تم التصدير');
+  },
+  importJSON(input){
+    const file=input.files[0];if(!file)return;
+    const r=new FileReader();
+    r.onload=e=>{
+      try{
+        const data=JSON.parse(e.target.result);
+        const keys = ['students','absences','tardiness','permissions','violations','excellence','communications','assembly','inspections','duties','calendar','substitutes','teacherLeaves','maintenance','visitors','lostfound','referrals','custodies','roles'];
+        keys.forEach(k=>{if(data[k])saveRecords(k,data[k])});
+        if(data.settings)saveSettings(data.settings);
+        UI.toast('تم الاستعادة بنجاح'); setTimeout(()=>location.reload(), 1000);
+      }catch(err){UI.toast('ملف غير صالح','danger')}
+    };
+    r.readAsText(file);
+  },
+  importTxt(){
+    const grade=document.getElementById('importTxtGrade').value;
+    const section=document.getElementById('importTxtSection').value;
+    const fileInput=document.getElementById('importTxtFile');
+    const file=fileInput.files[0];
+    if(!grade||!section){UI.toast('يرجى اختيار الصف والشعبة','danger');return}
+    if(!file){UI.toast('يرجى اختيار ملف TXT','danger');return}
+    const reader=new FileReader();
+    reader.onload=e=>{
+      const text=e.target.result;
+      const lines=text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+      if(!lines.length){UI.toast('الملف فارغ أو لا يحتوي على أسماء','danger');return}
+      const arr=getStudents();
+      let added=0;
+      lines.forEach(name=>{
+        arr.push({id:uid(),name,nationalId:'',grade,section,parentPhone:'',healthNotes:'',photo:'',notes:'',createdAt:today()});
+        added++;
+      });
+      saveStudents(arr);
+      fileInput.value='';
+      UI.toast('تم استيراد '+added+' طالب بنجاح');
+    };
+    reader.readAsText(file,'UTF-8');
+  },
+  resetData(){UI.confirm('⚠️ حذف جميع البيانات؟',()=>{DB.clear();UI.toast('تم إعادة التعيين');setTimeout(()=>location.reload(),1000)})}
+};
+
+const Profile={
+  tab(btn,id){
+    btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+    document.querySelectorAll('.profile-section').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active');
+  },
+  saveHealth(sid){
+    const arr=getStudents();const idx=arr.findIndex(s=>s.id===sid);if(idx<0)return;
+    arr[idx].healthNotes=document.getElementById('pHealthNotes').value; saveStudents(arr); UI.toast('تم حفظ السجل الصحي');
+  },
+  addRef(sid){
+    UI.openModal('تحويل جديد',`<div class="form-grid"><div class="form-group"><label>الجهة</label><select id="rf_dest"><option>المرشد الطلابي</option><option>الموجه الصحي (العيادة)</option></select></div><div class="form-group full"><label>السبب</label><input id="rf_reason"></div></div>`,`<button class="btn btn-primary" onclick="GenericCRUD('referrals').save({id:uid(),studentId:'${sid}',date:today(),dest:document.getElementById('rf_dest').value,reason:document.getElementById('rf_reason').value});setTimeout(()=>App.openProfile('${sid}'),100)">حفظ</button>`);
+  },
+  addCus(sid){
+    UI.openModal('إضافة عهدة',`<div class="form-grid"><div class="form-group full"><label>الغرض (كتاب، جهاز...)</label><input id="cs_item"></div></div>`,`<button class="btn btn-primary" onclick="GenericCRUD('custodies').save({id:uid(),studentId:'${sid}',date:today(),item:document.getElementById('cs_item').value,status:'مستلمة'});setTimeout(()=>App.openProfile('${sid}'),100)">حفظ</button>`);
+  },
+  toggleCus(id, sid){
+    let arr = getRecords('custodies'); let item = arr.find(x => x.id === id);
+    if(item.status === 'مستلمة') item.status = 'مسترجعة';
+    else if(item.status === 'مسترجعة') item.status = 'مفقودة';
+    else item.status = 'مستلمة';
+    saveRecords('custodies', arr); App.openProfile(sid); Profile.tab(document.querySelector('button[onclick*="pCus"]'), 'pCus');
+  },
+  addRol(sid){
+    UI.openModal('إضافة دور قيادي',`<div class="form-grid"><div class="form-group full"><label>الدور الموكل للطالب</label><select id="rl_role"><option>عريف الفصل</option><option>عضو الإذاعة المدرسية</option><option>رئيس النظام</option><option>مساعد معلم</option></select></div></div>`,`<button class="btn btn-primary" onclick="GenericCRUD('roles').save({id:uid(),studentId:'${sid}',date:today(),role:document.getElementById('rl_role').value});setTimeout(()=>App.openProfile('${sid}'),100)">حفظ</button>`);
+  }
+};
+
+const App={
+  _currentSection:'dashboard', _loggedIn:false,
+  init(){
+    const s=getSettings();
+    document.getElementById('sidebarSchoolName').textContent=s.schoolName; document.getElementById('sidebarYear').textContent=s.academicYear;
+    if(s.schoolLogo) document.getElementById('sidebarLogo').innerHTML = `<img src="${s.schoolLogo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    this.buildNav(); this.setDate();
+    document.getElementById('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')this.login()});
+  },
+  buildNav(){
+    const nav=document.getElementById('navLinks');
+    nav.innerHTML=NAV_ITEMS.map(n=>{
+      if(n.type==='header') return `<div class="nav-header">${n.label}</div>`;
+      return `<a href="#" data-section="${n.id}" onclick="App.navigate('${n.id}');return false"><svg viewBox="0 0 24 24">${n.icon}</svg>${n.label}</a>`;
+    }).join('');
+  },
+  setDate(){
+    const d=new Date(); const opts={weekday:'long',year:'numeric',month:'long',day:'numeric'};
+    document.getElementById('headerDate').textContent=d.toLocaleDateString('ar-SA',opts);
+  },
+  login(){
+    const pass=document.getElementById('loginPass').value, s=getSettings();
+    if(pass===(s.password||'admin')){
+      this._loggedIn=true; document.getElementById('loginScreen').style.display='none'; document.getElementById('app').style.display='block'; this.navigate('dashboard');
+    }else document.getElementById('loginErr').style.display='block';
+  },
+  logout(){
+    this._loggedIn=false; document.getElementById('app').style.display='none'; document.getElementById('loginScreen').style.display='flex'; document.getElementById('loginPass').value=''; document.getElementById('loginErr').style.display='none';
+  },
+  navigate(section){
+    this._currentSection=section; const mc=document.getElementById('mainContent');
+    const titleObj=NAV_ITEMS.find(n=>n.id===section); document.getElementById('headerTitle').textContent=titleObj?titleObj.label:'';
+    document.querySelectorAll('#navLinks a').forEach(a=>a.classList.toggle('active',a.dataset.section===section));
+    switch(section){
+      case'dashboard':mc.innerHTML=htmlDashboard();this.renderCharts();break;
+      case'students':mc.innerHTML=htmlStudents();Students.render();break;
+      case'absence':mc.innerHTML=htmlAbsence();Absence.render();break;
+      case'tardiness':mc.innerHTML=htmlTardiness();Tardiness.render();break;
+      case'permissions':mc.innerHTML=htmlPermissions();Permissions.render();break;
+      case'violations':mc.innerHTML=htmlViolations();Violations.render();break;
+      case'excellence':mc.innerHTML=htmlExcellence();Excellence.render();break;
+      case'communications':mc.innerHTML=htmlCommunications();Communications.render();break;
+      case'substitutes':mc.innerHTML=htmlSubstitutes();SubstituteClasses.render();break;
+      case'teacherLeaves':mc.innerHTML=htmlTeacherLeaves();TeacherLeaves.render();break;
+      case'assembly':mc.innerHTML=htmlAssembly();Assembly.render();break;
+      case'inspections':mc.innerHTML=htmlInspections();Inspections.render();break;
+      case'duties':mc.innerHTML=htmlDuties();Duties.render();break;
+      case'maintenance':mc.innerHTML=htmlMaintenance();Maintenance.render();break;
+      case'visitors':mc.innerHTML=htmlVisitors();Visitors.render();break;
+      case'lostfound':mc.innerHTML=htmlLostFound();LostFound.render();break;
+      case'calendar':mc.innerHTML=htmlCalendar();Calendar.render();break;
+      case'bulksms':mc.innerHTML=htmlBulkSMS();break;
+      case'formsmaker':mc.innerHTML=htmlFormsMaker();break;
+      case'reports':mc.innerHTML=htmlReports();break;
+      case'settings':mc.innerHTML=htmlSettings();break;
+    }
+    this.closeSidebar();
+  },
+  openProfile(sid){
+    this._currentSection='profile'; document.getElementById('mainContent').innerHTML=htmlProfile(sid); document.getElementById('headerTitle').textContent='ملف الطالب'; document.querySelectorAll('#navLinks a').forEach(a=>a.classList.remove('active'));
+  },
+  toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');},
+  closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');},
+  renderCharts(){
+    setTimeout(()=>{
+      const canvasWeek = document.getElementById('weekChart');
+      if(!canvasWeek) return; // Prevent errors if user navigated away fast
+      const days=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس'];
+      const abs=getRecords('absences'), trd=getRecords('tardiness');
+      const now=new Date(); const dayOfWeek=now.getDay();
+      const absData=days.map((_,i)=>{const d=new Date(now);d.setDate(d.getDate()-(dayOfWeek-i));return abs.filter(a=>a.date===d.toISOString().slice(0,10)).length;});
+      const trdData=days.map((_,i)=>{const d=new Date(now);d.setDate(d.getDate()-(dayOfWeek-i));return trd.filter(a=>a.date===d.toISOString().slice(0,10)).length;});
+      drawBarChart('weekChart',days,[{data:absData,color:'#c41e3a'},{data:trdData,color:'#d4a017'}]);
+
+      const sts=getStudents();
+      const gradeAbs=GRADES.map(g=>{
+        const gSts=sts.filter(s=>s.grade===g).map(s=>s.id);
+        return abs.filter(a=>gSts.includes(a.studentId)).length;
+      });
+      drawBarChart('gradeCompChart',GRADES.map(g=>g.replace(' ابتدائي','').replace(' متوسط','').replace(' ثانوي','')),[{data:gradeAbs,color:'#0f2557'}]);
+    },100);
+  }
+};
+
+App.init();
+
+/* ============================================================
+   PWA SETUP (SINGLE-FILE PROGRESSIVE WEB APP)
+   ============================================================ */
+// 1. تحديد الأيقونة: نستخدم الشعار المرفوع في الإعدادات، أو أيقونة افتراضية
+const pwaSettings = getSettings();
+let finalIcon = '';
+let iconType = 'image/svg+xml';
+
+if (pwaSettings.schoolLogo) {
+  // إذا قمت برفع شعار في الإعدادات، سيتم استخدامه كأيقونة للتطبيق
+  finalIcon = pwaSettings.schoolLogo; 
+  iconType = finalIcon.substring(5, finalIcon.indexOf(';')); // استخراج نوع الصورة تلقائياً (png/jpeg)
+} else {
+  // الأيقونة الافتراضية في حال لم ترفع شعاراً
+  const iconSVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512"><rect width="512" height="512" fill="#0f2557" rx="112"/><path d="M256 120L48 232l208 112 208-112L256 120zm0 168l-144-80v160c0 44.18 64.48 80 144 80s144-35.82 144-80V208l-144 80z" fill="#c9a227"/></svg>`;
+  finalIcon = 'data:image/svg+xml;base64,' + btoa(iconSVG);
+}
+
+// 2. توليد ملف Web App Manifest برمجياً
+const manifest = {
+  name: pwaSettings.schoolName || "المساعد لوكيل المدرسة المطور",
+  short_name: "وكيل المدرسة",
+  start_url: location.href.split('?')[0],
+  display: "standalone",
+  background_color: "#eef1f6",
+  theme_color: "#0f2557",
+  description: "نظام شامل وذكي لإدارة مهام وكيل المدرسة.",
+  icons: [
+    { src: finalIcon, sizes: "192x192", type: iconType, purpose: "any maskable" },
+    { src: finalIcon, sizes: "512x512", type: iconType, purpose: "any maskable" }
+  ]
+};
+const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+const manifestURL = URL.createObjectURL(manifestBlob);
+document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestURL}">`);
+
+// 3. توليد وتسجيل Service Worker برمجياً
+const swCode = `
+  const CACHE_NAME = 'school-agent-pwa-v1';
+  self.addEventListener('install', e => self.skipWaiting());
+  self.addEventListener('activate', e => self.clients.claim());
+  self.addEventListener('fetch', e => {
+    e.respondWith(fetch(e.request).catch(() => new Response('التطبيق يعمل في وضع عدم الاتصال (Offline)')));
+  });
+`;
+const swBlob = new Blob([swCode], {type: 'application/javascript'});
+const swURL = URL.createObjectURL(swBlob);
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register(swURL)
+      .then(reg => console.log('✅ PWA Service Worker Registered!'))
+      .catch(err => console.log('❌ PWA SW Registration Failed:', err));
+  });
+}
+</script>
+</body></html>
