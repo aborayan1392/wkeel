@@ -47,6 +47,29 @@ jobs:
           test -f generated-videosrt/VideoSRT/gradlew
           chmod +x generated-videosrt/VideoSRT/gradlew
 
+      - name: Apply native compatibility fixes
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          jni = Path('generated-videosrt/VideoSRT/app/src/main/cpp/whisper_jni.cpp')
+          text = jni.read_text()
+          text = text.replace(
+              'state->vm->AttachCurrentThread(reinterpret_cast<void **>(&env), nullptr)',
+              'state->vm->AttachCurrentThread(&env, nullptr)'
+          )
+          jni.write_text(text)
+
+          cmake = Path('generated-videosrt/VideoSRT/app/src/main/cpp/CMakeLists.txt')
+          text = cmake.read_text()
+          needle = 'target_compile_definitions(videosrt_whisper PUBLIC GGML_USE_CPU)\n'
+          if 'WHISPER_VERSION=' not in text:
+              text = text.replace(
+                  needle,
+                  needle + 'target_compile_definitions(videosrt_whisper PRIVATE WHISPER_VERSION=\\"1.9.2\\")\n'
+              )
+          cmake.write_text(text)
+          PY
+
       - name: Build debug APK
         working-directory: generated-videosrt/VideoSRT
         env:
